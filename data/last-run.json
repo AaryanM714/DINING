@@ -1,16 +1,16 @@
 {
-  "date": "2026-11-6",
-  "ranAt": "2026-11-07T02:15:18.409Z",
+  "date": "2026-11-7",
+  "ranAt": "2026-11-07T11:03:53.711Z",
   "requests": 3,
   "placesWithMenus": 0,
   "foods": 0,
   "published": false,
   "reasons": [
-    "stopped after 3 failed requests in a row (last: /location/62b21ebda9f13a0af14282f9/periods?platform=0&date=2026-11-6: HTTP 403)"
+    "stopped after 3 failed requests in a row (last: /location/62b21ebda9f13a0af14282f9/periods?platform=0&date=2026-11-7: HTTP 403)"
   ],
   "problems": [
     "status: /locations/status?site_id=61d7515eb63f1e0e970debbe&platform=0: HTTP 403",
-    "hours: /locations/weekly_schedule?site_id=61d7515eb63f1e0e970debbe&date=2026-11-6: HTTP 403",
-    "stopped after 3 failed requests in a row (last: /location/62b21ebda9f13a0af14282f9/periods?platform=0&date=2026-11-6: HTTP 403)"
+    "hours: /locations/weekly_schedule?site_id=61d7515eb63f1e0e970debbe&date=2026-11-7: HTTP 403",
+    "stopped after 3 failed requests in a row (last: /location/62b21ebda9f13a0af14282f9/periods?platform=0&date=2026-11-7: HTTP 403)"
   ]
 }
