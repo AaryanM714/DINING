@@ -1,8 +1,10 @@
 name: Daily UMN menu
 
 on:
-  schedule:
-    - cron: "23 10 * * *"   # once a day: 4:23 AM Central in winter, 5:23 AM in summer (GitHub may start it a few minutes late)
+  # PAUSED (Nov 2026): Dine On Campus returned HTTP 403 to the menu reads. Waiting for their reply.
+  # To resume, uncomment the next two lines.
+  # schedule:
+  #   - cron: "23 10 * * *"   # once a day: 4:23 AM Central in winter, 5:23 AM in summer (GitHub may start it a few minutes late)
   workflow_dispatch:
     inputs:
       fetch:
