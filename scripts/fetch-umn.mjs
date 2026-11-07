@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Daily UMN menu update for Plate Math.
+// Daily UMN menu update for Hall Pass.
 // Permission: M Food Co. (UMN Dining) said by email on Nov 6, 2026 that reading the published
 // menus is fine as long as it doesn't affect the website. So this script is deliberately light:
 // UMN only, once a day, one request at a time with a pause, retries only on 429/5xx (honouring
@@ -25,7 +25,7 @@ const BASE = process.env.PM_BASE || 'https://api.dineoncampus.com/v1';
 const PAUSE_MS = FIXTURES ? 0 : +(process.env.PM_PAUSE_MS ?? 1500);
 const MAX_LOCATIONS = 60;
 const MAX_FAILS_IN_A_ROW = 3;
-const UA = process.env.PM_USER_AGENT || 'PlateMath/1.0 (independent UMN student project; once-daily menu read)';
+const UA = process.env.PM_USER_AGENT || 'HallPass/1.0 (independent UMN student project; once-daily menu read)';
 const RUN_FILE = join(dirname(OUT), 'last-run.json');
 const GH = !!process.env.GITHUB_ACTIONS;
 
@@ -84,7 +84,7 @@ async function main() {
   const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
   const site = prev && prev.sites && prev.sites[0];
   const SITE_ID = process.env.PM_SITE_ID || (site && site.id) || '61d7515eb63f1e0e970debbe';
-  console.log(`Plate Math UMN update for ${DATE} (site ${SITE_ID})${FIXTURES ? ' [fixtures]' : ''}`);
+  console.log(`Hall Pass UMN update for ${DATE} (site ${SITE_ID})${FIXTURES ? ' [fixtures]' : ''}`);
 
   const problems = [];
   let stopped = null;

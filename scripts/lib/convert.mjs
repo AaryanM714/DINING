@@ -1,4 +1,4 @@
-// Turns Dine On Campus API responses into the menu format the Plate Math app reads.
+// Turns Dine On Campus API responses into the menu format the Hall Pass app reads.
 // Pure functions only (no network), so they can be tested with saved responses.
 // Every input is treated as untrusted: wrong shapes are skipped, never allowed to crash the day.
 

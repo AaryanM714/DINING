@@ -48,8 +48,8 @@ jobs:
       - name: Save the new menu
         if: github.event_name != 'push'
         run: |
-          git config user.name "plate-math-bot"
-          git config user.email "plate-math-bot@users.noreply.github.com"
+          git config user.name "hall-pass-bot"
+          git config user.email "hall-pass-bot@users.noreply.github.com"
           git add data/
           if git diff --cached --quiet; then echo "No menu change to save."; exit 0; fi
           git commit -m "Menu update $(date -u +%Y-%m-%d)"

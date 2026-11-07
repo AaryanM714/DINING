@@ -1,6 +1,6 @@
-# Plate Math (UMN)
+# Hall Pass
 
-Plate Math rates University of Minnesota dining hall food for your goal, builds a plate, and tracks protein, calories, fiber and key vitamins.
+Hall Pass rates University of Minnesota dining hall food for your goal, builds a plate, and tracks protein, calories, fiber and key vitamins.
 
 Independent project by a UMN student (Aaryan Maharaj). Not affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells or Dine On Campus.
 
@@ -19,7 +19,7 @@ Permission: M Food Co. (UMN Dining) said by email on Nov 6, 2026 that using the 
 ## One-time setup
 
 1. **GitHub account.** Sign up at github.com. Students can claim the free GitHub Student Developer Pack.
-2. **Create a repository** named `plate-math`. On a free account it must be **Public** for GitHub Pages to work. (A private repository needs GitHub Pro, included in the Student Pack.) Either way the website itself is public to anyone with the link, and its page contains the menu, so "private" only hides your code and history.
+2. **Create a repository** named `DINING`. On a free account it must be **Public** for GitHub Pages to work. (A private repository needs GitHub Pro, included in the Student Pack.) Either way the website itself is public to anyone with the link, and its page contains the menu, so "private" only hides your code and history.
 3. **Add the files.** Easiest: give Claude the repository name and it can push everything. By hand: on the repository page, "Add file → Upload files" and drag in everything **except** the `.github` folder (browser uploads often skip it). Then "Add file → Create new file", type the name `.github/workflows/daily.yml`, and paste in that file's contents.
 4. **Turn on Pages:** Settings → Pages → Build and deployment → Source: **GitHub Actions**.
 5. **First live run:** Actions tab → "Daily UMN menu" → Run workflow. When it finishes, open the run and read the "Read today's UMN menu" step. A green check is not enough on its own:

@@ -18,8 +18,8 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<meta name="description" content="Plate Math rates UMN dining hall food for your goals. Independent student project, not affiliated with UMN Dining.">
-<title>Plate Math</title>
+<meta name="description" content="Hall Pass rates UMN dining hall food for your goals. Independent student project, not affiliated with UMN Dining.">
+<title>Hall Pass</title>
 </head>
 <body>
 ${body}

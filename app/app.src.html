@@ -1,4 +1,4 @@
-<title>Plate Math Campus</title>
+<title>Hall Pass</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -348,7 +348,7 @@ html{scroll-padding-bottom:90px}
 <script>
 /* ============ LOGIC ============ */
 var LIVE=/*LIVE*/false;
-var DISCLAIMER='Plate Math is an independent student project. It isn\u2019t affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells or Dine On Campus. Menus come from UMN\u2019s published menus. Always confirm allergens with dining staff.';
+var DISCLAIMER='Hall Pass is an independent student project. It isn\u2019t affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells or Dine On Campus. Menus come from UMN\u2019s published menus. Always confirm allergens with dining staff.';
 var NK={C:0,P:1,CB:2,F:3,SU:4,FI:5,NA:6,SAT:7,CH:9};
 var AL=[
   {k:'pork',label:'Pork',grp:'meat',re:/^Pork/,rx:/\b(pork|bacon|ham|sausages?|pepperoni|prosciutto|salami|lard|chorizo|pancetta|bratwurst|hot dogs?|carnitas|kielbasa|andouille|al pastor|capicola|soppressata|mortadella|pulled pork|spare ?ribs?)\b/i},
@@ -1122,7 +1122,7 @@ function introView(){
   else if(S.step===1)body='<div class="eyebrow">2 of 4</div><h1>A few<br>numbers</h1><p class="lede">This sets your daily calories and protein. Estimates only. You can edit them later.</p><p class="hint" style="color:var(--warn)">These start as example numbers. Change them to yours for accurate targets.</p>'+bodyFields();
   else if(S.step===2)body='<div class="eyebrow">3 of 4</div><h1>Any food<br>rules?</h1><p class="lede">We hide what you can’t or won’t eat.</p>'+foodFields();
   else{body='<div class="eyebrow">4 of 4</div><h1>Where do<br>you eat?</h1><p class="lede">'+(LIVE?'Pick your usual dining hall. You can switch any time.':'Pick a campus and a dining place.')+'</p>'+(LIVE?'<p class="hint">'+esc(DISCLAIMER)+'</p>':'')+'<div style="margin-top:16px">'+pickerHTML()+'</div>'+(sitesWithMenus().length<2?dataLoader():'');next='Show me the menu'}
-  return '<div class="intro">'+bar+body+'<div class="actions">'+(S.step>0?'<button class="btn" data-act="back">Back</button>':'')+'<button class="btn solid" data-act="next"'+(S.step===3&&!S.sel.locId?' disabled':'')+'>'+(S.step===3&&!S.sel.locId?'Pick a place first':next)+'</button></div>'+(S.step===3?'<p class="hint">Plate Math gives general nutrition information, not medical advice. Always confirm allergens with dining staff. Your data stays on this device.</p>':'')+'</div>';
+  return '<div class="intro">'+bar+body+'<div class="actions">'+(S.step>0?'<button class="btn" data-act="back">Back</button>':'')+'<button class="btn solid" data-act="next"'+(S.step===3&&!S.sel.locId?' disabled':'')+'>'+(S.step===3&&!S.sel.locId?'Pick a place first':next)+'</button></div>'+(S.step===3?'<p class="hint">Hall Pass gives general nutrition information, not medical advice. Always confirm allergens with dining staff. Your data stays on this device.</p>':'')+'</div>';
 }
 function budgetStrip(b){
   var t=totals(S.plate),pc=Math.min(100,t.cal/b.cal*100),pp=Math.min(100,t.p/b.p*100),over=t.cal>b.cal*1.1;
@@ -1467,11 +1467,11 @@ function trainingSettings(){
 function aboutHTML(){
   var d=function(t,b){return '<details class="legal"><summary>'+t+'</summary><div>'+b+'</div></details>'};
   return '<div class="panel"><div class="panel-head"><h2>About and legal</h2><span class="mono" style="font-size:.72rem;color:var(--muted)">'+(LIVE?'v1.0 pilot':'v1.0 test build')+'</span></div>'+
-    d('Not medical advice','<p>Plate Math gives general nutrition information for healthy adults. It is not medical advice and does not replace a doctor or registered dietitian. If you have a medical condition, are pregnant, or have a history of disordered eating, talk to a professional before following calorie or macro targets.</p><p>If food, eating or your body is causing you stress, Boynton Mental Health at UMN can help: 612-624-1444. The UMN Student Crisis Line is 612-301-4673 (24/7). The National Alliance for Eating Disorders helpline is 1-866-662-1235 (weekdays). In an emergency, call 911 or 988.</p>')+
+    d('Not medical advice','<p>Hall Pass gives general nutrition information for healthy adults. It is not medical advice and does not replace a doctor or registered dietitian. If you have a medical condition, are pregnant, or have a history of disordered eating, talk to a professional before following calorie or macro targets.</p><p>If food, eating or your body is causing you stress, Boynton Mental Health at UMN can help: 612-624-1444. The UMN Student Crisis Line is 612-301-4673 (24/7). The National Alliance for Eating Disorders helpline is 1-866-662-1235 (weekdays). In an emergency, call 911 or 988.</p>')+
     d('Allergies','<p>Allergen filters use the dining hall\u2019s labels plus food names, descriptions and ingredients. Labels can be wrong or missing, recipes change, and kitchens share equipment. Always confirm with dining staff before you eat. Never rely on this app alone for a severe allergy.</p>')+
     d('Your privacy','<p>Everything you enter (your body numbers, goals, food rules, logs and workouts) stays in this browser on this device. There are no accounts, no tracking and nothing is sent to a server. Clearing your browser data erases it.</p>')+
     d('Where the numbers come from','<p>Menus and nutrition come from each school\u2019s published dining data. Salad bar items and \u201cNot on the menu?\u201d foods use typical values for a standard portion. Targets use the Mifflin-St Jeor equation, ISSN protein guidance, FDA Daily Values, the Dietary Guidelines and the 2024 Compendium of Physical Activities.</p>')+
-    d('Who made this','<p>Plate Math is an independent project by a University of Minnesota student. It is not affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells, Compass Group or Dine On Campus. Dine On Campus is a trademark of Compass Group USA.</p>'+(LIVE?'<p>Menus are read automatically once a day from UMN\u2019s published menus.</p>':'<p>This is a private test build. Do not share it publicly.</p>')+'')+
+    d('Who made this','<p>Hall Pass is an independent project by a University of Minnesota student. It is not affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells, Compass Group or Dine On Campus. Dine On Campus is a trademark of Compass Group USA.</p>'+(LIVE?'<p>Menus are read automatically once a day from UMN\u2019s published menus.</p>':'<p>This is a private test build. Do not share it publicly.</p>')+'')+
     '</div>';
 }
 function allergyCard(){
@@ -1517,7 +1517,7 @@ function renderTabs(){
   el.innerHTML=[['menu','Menu'],['plate','Plate'],['today','Today'],['you','You']].map(function(t){return '<button data-act="tab" data-v="'+t[0]+'"'+(S.tab===t[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[t[0]]+'</svg><span>'+t[1]+'</span>'+(t[0]==='plate'&&n?'<em>'+n+'</em>':'')+'</button>'}).join('');
 }
 function brandHTML(){
-  return '<div class="brand"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="var(--line)" stroke-width="5"/><path d="M16 4 A12 12 0 0 1 27.4 19.7" fill="none" stroke="var(--p)" stroke-width="5"/><path d="M27.4 19.7 A12 12 0 0 1 9.5 26.1" fill="none" stroke="var(--c)" stroke-width="5"/><path d="M9.5 26.1 A12 12 0 0 1 16 4" fill="none" stroke="var(--f)" stroke-width="5"/></svg><span>Plate Math</span></div>';
+  return '<div class="brand"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="var(--line)" stroke-width="5"/><path d="M16 4 A12 12 0 0 1 27.4 19.7" fill="none" stroke="var(--p)" stroke-width="5"/><path d="M27.4 19.7 A12 12 0 0 1 9.5 26.1" fill="none" stroke="var(--c)" stroke-width="5"/><path d="M9.5 26.1 A12 12 0 0 1 16 4" fill="none" stroke="var(--f)" stroke-width="5"/></svg><span>Hall Pass</span></div>';
 }
 function render(){
   var app=document.getElementById('app'),h;
