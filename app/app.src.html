@@ -1,0 +1,1770 @@
+<title>Plate Math Campus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Look: dark graphite by default, with Ember, Violet and Paper palettes (data-pal on the root, picked under You).
+   Layout: one column app with a bottom tab bar (Menu, Plate, Saved, You).
+   First launch is a four step intro: goal, body, food rules, dining hall.
+   Signage type for headings, mono for numbers, green-grey tray palette. */
+:root{
+  --bg:#0C0D10; --surface:#14161B; --raise:#1B1E25; --ink:#ECEEF2; --muted:#8F96A3; --line:#353A46;
+  --accent:#8BB4FF; --on-accent:#0A1224; --cal:#6FD3B0; --p:#8BB4FF; --c:#E6B25A; --f:#D79BE8;
+  --ok:#5CCB8F; --warn:#E6B25A; --bad:#FF8A80; color-scheme:dark;
+  --font-display:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;
+  --font-body:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+:root[data-pal="ember"]{
+  --bg:#0F0C0B; --surface:#181311; --raise:#211A17; --ink:#F1EAE4; --muted:#A09086; --line:#40352F;
+  --accent:#FF7A3D; --on-accent:#1A0B03; --cal:#FFB48A; --p:#FF7A3D; --c:#E6B25A; --f:#D79BE8;
+  --ok:#6FCB8A; --warn:#E6B25A; --bad:#FF8A80; color-scheme:dark;
+}
+:root[data-pal="violet"]{
+  --bg:#0D0B14; --surface:#151221; --raise:#1D1930; --ink:#EEEAF8; --muted:#9A93B5; --line:#3C3659;
+  --accent:#A78BFA; --on-accent:#0F0A24; --cal:#7DD3C0; --p:#A78BFA; --c:#E6B25A; --f:#F0A6D8;
+  --ok:#5CCB8F; --warn:#E6B25A; --bad:#FF8A80; color-scheme:dark;
+}
+:root[data-pal="paper"]{
+  --bg:#F3F4F6; --surface:#FFFFFF; --raise:#FFFFFF; --ink:#111317; --muted:#5C6370; --line:#C4C8D0;
+  --accent:#3B3BF0; --on-accent:#FFFFFF; --cal:#0E7A5F; --p:#3B3BF0; --c:#9A5B00; --f:#8A3FA0;
+  --ok:#1B7A4B; --warn:#9A5B00; --bad:#B3261E; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 var(--font-body);
+  padding-block:20px 110px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:680px;margin:0 auto}
+h1,h2,h3,p,ul{margin:0}
+h1{font:900 clamp(2.6rem,11vw,3.6rem)/.88 var(--font-display);text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+h2{font:800 1.45rem/1 var(--font-display);text-transform:uppercase;letter-spacing:.03em}
+h3{font:700 1.05rem/1.1 var(--font-display);text-transform:uppercase;letter-spacing:.04em}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eyebrow{font:500 .72rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.lede{margin-top:10px;color:var(--muted)}
+.mono{font-family:var(--font-mono)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:14px}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.hint{font-size:.82rem;color:var(--muted);margin-top:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow-x:auto;overflow-y:hidden;background:var(--surface);scrollbar-width:none}
+.seg button{flex:1 0 auto;white-space:nowrap;min-height:44px;padding:0 8px;border:0;background:transparent;font:600 .88rem var(--font-body);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.btn{min-height:44px;padding:0 16px;border-radius:6px;border:1px solid var(--ink);background:transparent;font:600 .9rem var(--font-body);cursor:pointer}
+.btn.solid{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.sm{min-height:38px;padding:0 12px;font-size:.84rem}
+.btn:disabled{opacity:.4;cursor:default}
+.link{background:none;border:0;padding:6px 0;min-height:32px;font:500 .82rem var(--font-body);color:var(--muted);text-decoration:underline;cursor:pointer;text-align:left}
+.icon{width:38px;height:38px;display:inline-grid;place-items:center;border:1px solid var(--line);background:var(--raise);border-radius:6px;cursor:pointer;font:600 1.1rem var(--font-body)}
+.icon:disabled{opacity:.4}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:38px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--raise);font:600 .82rem var(--font-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tf{display:grid;gap:4px;font:500 .74rem var(--font-body);color:var(--muted)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+input[type=number],input[type=text],input[type=search]{width:100%;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--raise);color:var(--ink);font:500 .95rem var(--font-mono)}
+input[type=search],input[type=text]{font-family:var(--font-body)}
+
+/* intro */
+.intro .bar{display:flex;gap:6px;margin-bottom:22px}
+.intro .bar i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.intro .bar i.on{background:var(--ink)}
+.goals{display:grid;gap:10px;margin-top:18px}
+.goal{display:grid;gap:4px;text-align:left;padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
+.goal b{font:800 1.7rem/1 var(--font-display);text-transform:uppercase;letter-spacing:.03em}
+.goal span{color:var(--muted);font-size:.9rem}
+.goal[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--raise)}
+.stack{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:18px}
+.big{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:6px}
+.big .n{font:500 1.7rem/1 var(--font-mono)}
+.big .l{font:500 .7rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* menu */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.top>div:first-child{min-width:0}
+.top h1{overflow-wrap:break-word}
+.hdr-btns{display:flex;gap:8px;margin-top:12px}
+.meter.over i{background:var(--warn)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.drop:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.intro>.actions{position:sticky;bottom:0;background:var(--bg);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);z-index:5}
+.vi{font:500 .75rem var(--font-mono);color:var(--muted)}
+.status{font:500 .78rem var(--font-mono);color:var(--muted);margin-top:8px}
+.status b{color:var(--ok);font-weight:500}
+.status b.off{color:var(--bad)}
+.banner{margin-top:12px;padding:10px 12px;border:1px solid var(--warn);border-radius:6px;font-size:.84rem;color:var(--ink);background:var(--surface)}
+.budget{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.bcell{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.bcell .l{font:500 .68rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bcell .val{font:500 1.15rem var(--font-mono);margin-top:2px}
+.bcell .val small{font-size:.75rem;color:var(--muted)}
+.meter{height:5px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--cal)}
+.meter.p i{background:var(--p)}
+.list{margin-top:6px}
+.station{margin-top:16px}
+.station h3{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ink);padding-bottom:6px}
+.station h3 span{font:500 .72rem var(--font-mono);color:var(--muted)}
+.item{border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0}
+.row .main{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;cursor:pointer;display:block}
+.nm{font-weight:600;overflow-wrap:anywhere}
+.sub{font:400 .74rem var(--font-mono);color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.sub b{font-weight:500;color:var(--ink)}
+.v{flex:none;font:500 .66rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;border:1px solid var(--line)}
+.v.good{color:var(--ok);border-color:var(--ok)}
+.v.okay{color:var(--warn);border-color:var(--warn)}
+.v.skip{color:var(--bad);border-color:var(--bad)}
+.v.none{color:var(--muted)}
+.add{flex:none;min-width:44px;height:38px;border-radius:6px;border:1px solid var(--ink);background:transparent;font:600 1.05rem var(--font-body);cursor:pointer}
+.add.has{background:var(--ink);color:var(--bg);font:500 .85rem var(--font-mono)}
+.detail{display:none;padding:0 0 14px;font-size:.88rem}
+.item.open .detail{display:block}
+.detail p{margin-top:8px}
+.detail p.what{color:var(--muted)}
+.facts{list-style:none;padding:0;margin-top:8px;display:grid;gap:4px}
+.facts li{padding-left:14px;position:relative}
+.facts li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:2px;background:var(--muted)}
+.nutri{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}
+.nutri>div{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.nutri .l{font:500 .62rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.nutri .n{font:500 .9rem var(--font-mono)}
+.tag{display:inline-block;font:500 .66rem var(--font-mono);padding:2px 6px;border-radius:4px;border:1px solid var(--line);margin:6px 6px 0 0;color:var(--muted)}
+.tag.al{color:var(--bad);border-color:var(--bad)}
+.ing{font-size:.78rem;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}
+.picks .row{padding:8px 0}
+.empty{font-size:.9rem;color:var(--muted);padding:10px 0}
+
+/* plate */
+.plate-items{list-style:none;padding:0}
+.plate-items li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.plate-items li:first-child{border-top:0}
+.step{display:inline-flex;align-items:center;gap:2px;flex:none}
+.qty{min-width:2.4em;text-align:center;font:500 .85rem var(--font-mono)}
+.hero{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:14px;padding-top:14px;border-top:1px solid var(--ink)}
+.hero .n{font:500 1.6rem/1 var(--font-mono)}
+.hero .l{font:500 .68rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brow{display:grid;grid-template-columns:5.2em 1fr auto;gap:10px;align-items:center;margin-top:10px}
+.brow .l{font:500 .72rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.brow .t{font:400 .75rem var(--font-mono);color:var(--muted);text-align:right}
+.verdict{margin-top:12px;font-weight:600}
+.verdict.ok{color:var(--ok)}
+.verdict.warn{color:var(--warn)}
+.saved-card{padding:14px 0;border-top:1px solid var(--line)}
+.saved-card:first-child{border-top:0}
+.saved-card p{font-size:.85rem;color:var(--muted);margin-top:4px}
+
+/* picker sheet */
+.sheet{position:fixed;inset:0;z-index:30;background:var(--bg);overflow-y:auto;
+  padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.pick{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:48px;padding:10px 12px;margin-top:8px;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
+.pick[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--raise)}
+.pick span{font:500 .72rem var(--font-mono);color:var(--muted);text-align:right;white-space:nowrap}
+.pick b{font-weight:600;overflow-wrap:anywhere}
+.drop{display:block;margin-top:10px;padding:14px;border:1px dashed var(--muted);border-radius:8px;text-align:center;cursor:pointer;color:var(--muted);font-size:.88rem}
+
+/* tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:var(--surface);border-top:1px solid var(--line);
+  padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+.tabs button{flex:1;min-height:48px;border:0;background:none;cursor:pointer;font:700 1rem var(--font-display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);position:relative}
+.tabs button[aria-current="page"]{color:var(--ink)}
+.tabs button[aria-current="page"]::after{content:"";position:absolute;left:30%;right:30%;top:0;height:3px;background:var(--ink)}
+.tabs em{font:500 .66rem var(--font-mono);font-style:normal;background:var(--accent);color:var(--on-accent);border-radius:9px;padding:1px 6px;margin-left:5px;vertical-align:2px}
+.mic{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:6px}
+.mc{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.mc .l{font:500 .62rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mc .n{font:500 .85rem var(--font-mono)}
+.mc .d{font:400 .66rem var(--font-mono);color:var(--muted)}
+.mc .meter{height:3px;margin-top:4px}
+.boost{margin-top:14px}
+.boost .eyebrow{margin-bottom:6px}
+.rings{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-around;margin-top:6px}
+.ring{position:relative;display:grid;justify-items:center;gap:4px}
+.ring .rv{position:absolute;top:0;left:0;right:0;height:120px;display:grid;place-content:center;text-align:center}
+.ring .rv .n{font:500 1.35rem/1 var(--font-mono)}
+.ring .rv .l{font:400 .66rem var(--font-mono);color:var(--muted);margin-top:3px}
+.ring .rl{font:700 .9rem var(--font-display);letter-spacing:.06em;text-transform:uppercase}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px;text-align:center}
+.week .d{font:500 .66rem var(--font-mono);color:var(--muted)}
+.week .dot{width:22px;height:22px;border-radius:50%;margin:4px auto 0;border:2px solid var(--line)}
+.week .dot.part{border-color:var(--p)}
+.week .dot.hit{background:var(--p);border-color:var(--p)}
+.week .today .d{color:var(--ink)}
+.warnline{color:var(--warn)}
+.star{color:var(--warn);margin-right:4px}
+#copybox{width:100%;min-height:120px;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--raise);color:var(--ink);font:400 .8rem var(--font-mono)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font:600 .85rem var(--font-body)}
+.mchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.mchips span{font:500 .68rem var(--font-mono);padding:1px 6px;border-radius:999px;border:1px solid currentColor}
+.mc-p{color:var(--p)}.mc-c{color:var(--c)}.mc-f{color:var(--f)}
+.mbar{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:5px;max-width:240px;background:var(--line)}
+.mbar i{display:block;height:100%}.mbar .bp{background:var(--p)}.mbar .bc{background:var(--c)}.mbar .bf{background:var(--f)}
+.mleg{display:flex;gap:8px;font:500 .68rem var(--font-mono);margin-top:3px}
+details.salad>summary{list-style:none;cursor:pointer}
+details.salad>summary::-webkit-details-marker{display:none}
+details.salad>summary h3::after{content:'+';font:500 1rem var(--font-mono);margin-left:8px;color:var(--muted)}
+details.salad[open]>summary h3::after{content:'\2212'}
+:root[data-dens="compact"] body{font-size:14px}
+:root[data-dens="compact"] h1{font-size:clamp(2rem,8vw,2.6rem)}
+:root[data-dens="compact"] .row{padding:6px 0}
+:root[data-dens="compact"] .rsn{display:none}
+:root[data-dens="compact"] .panel{padding:12px;margin-top:10px}
+:root[data-dens="compact"] .station{margin-top:10px}
+:root[data-dens="compact"] .lede{display:none}
+:root[data-dens="compact"] .add{height:34px;min-width:40px}
+:root[data-head="clean"] h1,:root[data-head="clean"] h2,:root[data-head="clean"] h3,:root[data-head="clean"] .goal b,:root[data-head="clean"] .tabs button,:root[data-head="clean"] .ring .rl,:root[data-head="clean"] .dt,:root[data-head="clean"] .help summary{font-family:var(--font-body);text-transform:none;letter-spacing:-.01em}
+:root[data-head="clean"] h1{font-weight:800;line-height:1.05;font-size:clamp(2rem,8vw,2.7rem)}
+:root[data-head="clean"] h2{font-weight:700;font-size:1.15rem}
+:root[data-head="clean"] h3{font-weight:700;font-size:.98rem}
+:root[data-head="clean"] .tabs button{font-weight:600;font-size:.9rem}
+:root[data-list="cards"] .item{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:2px 12px;margin-top:8px}
+:root[data-list="cards"] .station{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));column-gap:8px;align-items:start}
+:root[data-list="cards"] .station>h3,:root[data-list="cards"] .station>p,:root[data-list="cards"] .station>summary,:root[data-list="cards"] .station>.dt{grid-column:1/-1}
+:root[data-list="cards"] .item.open{grid-column:1/-1}
+:root[data-verdict="stripe"] .row .v{display:none}
+:root[data-verdict="stripe"] .item{border-left:4px solid var(--line);padding-left:10px}
+:root[data-verdict="stripe"] .item.r-good{border-left-color:var(--ok)}
+:root[data-verdict="stripe"] .item.r-okay{border-left-color:var(--warn)}
+:root[data-verdict="stripe"] .item.r-skip{border-left-color:var(--bad)}
+:root[data-verdict="dot"] .row .v{font-size:0;width:12px;height:12px;padding:0;border-radius:50%;border:0;background:var(--line)}
+:root[data-verdict="dot"] .row .v.good{background:var(--ok)}
+:root[data-verdict="dot"] .row .v.okay{background:var(--warn)}
+:root[data-verdict="dot"] .row .v.skip{background:var(--bad)}
+.nrow{display:grid;grid-template-columns:7.2em minmax(0,1fr) auto;gap:4px 10px;align-items:center;margin-top:10px}
+.nrow .l{font:500 .72rem var(--font-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.nrow .t{font:400 .74rem var(--font-mono);color:var(--muted);text-align:right;white-space:nowrap}
+.nrow .nn{grid-column:1/-1;font-size:.74rem;color:var(--muted)}
+.meter.lim i{background:var(--muted)}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:14px;font:800 1.05rem var(--font-body);letter-spacing:-.01em}
+.legal{border-top:1px solid var(--line)}
+.legal summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}
+.legal div{padding:0 0 12px;font-size:.88rem;color:var(--muted);display:grid;gap:8px}
+.acard{margin-top:14px;padding:22px;border-radius:12px;background:var(--raise);border:2px solid var(--bad)}
+.acard h1{font-size:clamp(2.2rem,10vw,3rem)}
+.acard .big-al{font:800 1.6rem/1.2 var(--font-body);margin:12px 0;color:var(--bad)}
+.acard .sev{font-weight:700;margin-bottom:10px}
+.acard p{margin-top:8px;font-size:1.05rem}
+select{width:100%;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:var(--raise);color:var(--ink);font:500 .95rem var(--font-body)}
+.tpanel>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;min-height:32px}
+.tpanel>summary::-webkit-details-marker{display:none}
+.tpanel>summary::after{content:'+';margin-left:auto;font:500 1.1rem var(--font-mono);color:var(--muted)}
+.tpanel[open]>summary::after{content:'\2212'}
+.tp-h{font:700 1.15rem var(--font-body)}
+:root[data-head="signage"] .tp-h{font:800 1.45rem/1 var(--font-display);text-transform:uppercase}
+.tp-s{font:500 .76rem var(--font-mono);color:var(--muted);min-width:0}
+.plan{border-top:1px solid var(--line);margin-top:12px;padding-top:4px}
+.help{margin-top:14px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.help summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 14px;font:700 1rem var(--font-display);letter-spacing:.05em;text-transform:uppercase;list-style:none}
+.help summary::-webkit-details-marker{display:none}
+.help summary::after{content:'+';margin-left:auto;font:500 1.1rem var(--font-mono)}
+.help[open] summary::after{content:'\2212'}
+.help .hb{padding:0 14px 14px;font-size:.86rem;display:grid;gap:8px}
+.help .hb b{font-weight:700}
+.help .hb .v{margin-right:6px}
+.dt{font:700 .8rem var(--font-display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:12px}
+.rsn{font-size:.8rem;margin-top:3px;color:var(--muted)}
+.look{display:flex;flex-wrap:wrap;gap:8px}
+.sw{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px 0 8px;border-radius:999px;border:1px solid var(--line);background:var(--raise);cursor:pointer;font:600 .82rem var(--font-body)}
+.sw i{width:20px;height:20px;border-radius:50%;border:1px solid var(--line)}
+.sw[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.foot{margin-top:26px;font-size:.76rem;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){ .item .detail{animation:fade .15s ease-out} @keyframes fade{from{opacity:0}to{opacity:1}} }
+
+/* v13 simplify */
+.seg.col{flex-direction:column}
+.seg.col button{white-space:normal;text-align:left;padding:10px 14px;line-height:1.3}
+.seg.col button+button{border-left:0;border-top:1px solid var(--line)}
+.subtabs{margin:14px 0 4px}
+.subtabs button{font-size:.84rem}
+h1.hall{margin-top:2px}
+.link.inl{min-height:0;padding:0;font-size:inherit;display:inline;vertical-align:baseline}
+.mode-line{margin-top:10px;font-size:.82rem;color:var(--muted)}
+.tip{margin-top:14px;padding:14px;border:1px solid var(--accent);border-radius:10px;background:var(--surface);font-size:.88rem}
+.tip-h{font-weight:700;margin-bottom:6px}
+.tip ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.tip-k{margin-top:10px;font-size:.84rem;color:var(--muted)}
+.tip-k .v{margin-right:4px}
+.banner.row-b{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.banner.row-b label{cursor:pointer;display:inline-flex;align-items:center;min-height:36px;padding:0 12px}
+.plate-links{display:flex;gap:18px;align-items:baseline;margin-top:12px;font-size:.88rem}
+.plate-links span{margin-left:auto;font:500 .75rem var(--font-mono);color:var(--muted)}
+details.boost{margin-top:10px}
+details.boost>summary,details.more>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-size:.86rem;font-weight:600;color:var(--muted);list-style:none}
+details.boost>summary::-webkit-details-marker,details.more>summary::-webkit-details-marker{display:none}
+details.boost>summary::before,details.more>summary::before{content:'+';font:500 1rem var(--font-mono);margin-right:8px}
+details.boost[open]>summary::before,details.more[open]>summary::before{content:'\2212'}
+details.more{margin-top:12px}
+.st-head{display:flex;justify-content:space-between;align-items:baseline;margin-top:22px}
+.st-head h2{font-size:1.1rem}
+details.fold>summary{list-style:none;cursor:pointer}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary h3{min-height:40px;align-items:center}
+details.fold>summary h3::after{content:'+';font:500 1rem var(--font-mono);margin-left:8px;color:var(--muted)}
+details.fold[open]>summary h3::after{content:'\2212'}
+details.fold>summary h3 span{margin-left:auto}
+details.fold:not([open])>summary h3{border-bottom-color:var(--line)}
+:root[data-list="cards"] details.fold{display:block}
+:root[data-list="cards"] details.fold .sbody{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));column-gap:8px;align-items:start}
+details.fold-p>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+details.fold-p>summary::-webkit-details-marker{display:none}
+details.fold-p>summary .mono{font-size:.75rem;color:var(--muted)}
+details.fold-p>summary::after{content:'+';font:500 1.1rem var(--font-mono);color:var(--muted);margin-left:8px}
+details.fold-p[open]>summary::after{content:'\2212'}
+.empty-state p{margin:0}
+.empty-state .hint{margin-top:6px}
+.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding-top:4px}
+.tabs button span{font-size:.72rem;letter-spacing:.02em}
+:root[data-head="clean"] .tabs button{font-size:.72rem}
+.tabs em{position:absolute;top:2px;left:calc(50% + 8px);margin:0}
+.pick[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.pick[aria-pressed="true"] b::before{content:'\2713  ';color:var(--accent)}
+.add .cnt{font:600 .62rem var(--font-mono);font-style:normal;margin-left:2px;vertical-align:1px}
+input[aria-invalid="true"]{border-color:var(--warn)}
+@media (max-width:360px){.seg.diet{display:grid;grid-template-columns:1fr 1fr}.seg.diet button+button{border-left:0}.seg.diet button:nth-child(even){border-left:1px solid var(--line)}.seg.diet button:nth-child(n+3){border-top:1px solid var(--line)}}
+.rings{gap:8px}
+.ring .rv .n{font-size:1.15rem}
+.ring .rv{height:96px}
+.safe{margin-top:12px;padding:10px 12px;border-left:3px solid var(--warn);background:var(--surface);font-size:.84rem}
+.safe p{margin:0}.safe p+p{margin-top:6px}
+.support{margin-top:16px}
+html{scroll-padding-bottom:90px}
+.pick b{overflow-wrap:break-word;word-break:normal}
+@media (max-width:360px){.nutri .n{font-size:.82rem}.nutri .l{font-size:.6rem}.hero .n{font-size:1.25rem}.nrow .t{font-size:.68rem}.pick span{white-space:normal;max-width:42%}.brow .t{font-size:.68rem}}
+</style>
+
+<div class="wrap" id="app"></div>
+<nav class="tabs" id="tabs" hidden aria-label="Sections"></nav>
+<div class="sheet" id="sheet" hidden></div>
+
+<script id="umn-data" type="application/json">__UMN_JSON__</script>
+<script>
+/* ============ LOGIC ============ */
+var LIVE=/*LIVE*/false;
+var DISCLAIMER='Plate Math is an independent student project. It isn\u2019t affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells or Dine On Campus. Menus come from UMN\u2019s published menus. Always confirm allergens with dining staff.';
+var NK={C:0,P:1,CB:2,F:3,SU:4,FI:5,NA:6,SAT:7,CH:9};
+var AL=[
+  {k:'pork',label:'Pork',grp:'meat',re:/^Pork/,rx:/\b(pork|bacon|ham|sausages?|pepperoni|prosciutto|salami|lard|chorizo|pancetta|bratwurst|hot dogs?|carnitas|kielbasa|andouille|al pastor|capicola|soppressata|mortadella|pulled pork|spare ?ribs?)\b/i},
+  {k:'beef',label:'Beef',grp:'meat',re:/^Beef/,rx:/\b(beef|steak|brisket|veal|meatballs?|carne asada|asada|pastrami|cheesesteak|philly|corned|bulgogi|barbacoa|burgers?|hamburgers?|cheeseburgers?)\b/i},
+  {k:'poultry',label:'Chicken / turkey',grp:'meat',re:/^Poultry/,rx:/\b(chicken|turkey|duck|poultry|wings?)\b/i},
+  {k:'meat',label:'Other meat',grp:'hidden',re:/^$/,rx:/\b(lamb|mutton|goat|venison|bison|gyros?|shawarma|meat ?loaf|meat sauce|bolognese|jerky)\b/i},
+  {k:'fish',label:'Fish',grp:'meat',re:/^Fish/,rx:/\b(fish|salmon|tuna|cod|tilapia|anchov\w*|pollock|haddock|mahi|caesar|catfish|swai|trout|worcestershire)\b/i},
+  {k:'shell',label:'Shellfish',grp:'meat',re:/^Shellfish/,rx:/\b(shrimp|crab|lobster|scallops?|clams?|mussels?|oysters?|calamari|squid)\b/i},
+  {k:'peanut',label:'Peanuts',grp:'allergen',re:/^Peanuts/,rx:/\bpeanuts?\b|\bpb\s*&|\bpb&j|satay/i},
+  {k:'treenut',label:'Tree nuts',grp:'allergen',re:/^Tree Nuts/,rx:/almond|walnut|pecan|cashew|pistachio|hazelnut|filbert|macadamia|pine nut|praline|brazil nut|nutella|marzipan|frangipane|\bpesto\b|\bnut butter|mixed nuts|korma|granola/i},
+  {k:'milk',label:'Milk',grp:'allergen',re:/^Milk/,rx:/\b(milk|cheese|butter|cream|yogurt|whey|casein|parmesan|mozzarella|cheddar|ricotta|feta|queso|alfredo|ranch|latte)\b/i},
+  {k:'egg',label:'Egg',grp:'allergen',re:/^Egg/,rx:/\beggs?\b|omelet|frittata|\bmayo|aioli|meringue|quiche/i},
+  {k:'soy',label:'Soy',grp:'allergen',re:/^Soy/,rx:/\b(soy|soybean|tofu|edamame|tempeh|miso|teriyaki)\b/i},
+  {k:'gluten',label:'Wheat / gluten',grp:'allergen',re:/^(Wheat|Gluten)/,rx:/\b(wheat|flour|pasta|spaghetti|penne|rigatoni|fettuccine|linguine|rotini|ziti|macaroni|mac (and|&|n) cheese|noodles?|lasagna|ravioli|tortellini|gnocchi|orzo|bread|breaded|breadsticks?|buns?|rolls?|bagels?|croissants?|muffins?|pancakes?|waffles?|french toast|flour tortillas?|wraps?|pita|naan|pizza|flatbread|crackers?|croutons?|couscous|bulgur|biscuits?|cookies?|cakes?|cupcakes?|brownies?|pastr(y|ies)|pies?|crust|dumplings?|panko|seitan|barley|rye|soy sauce|teriyaki|graham|sandwich|sub|burritos?|quesadillas?|tempura|katsu|battered|fried chicken|chicken tenders|nuggets?|cereal|granola|stuffing|gravy|roux|beer)\b/i},
+  {k:'sesame',label:'Sesame',grp:'allergen',re:/^Sesame/,rx:/sesame|tahini|hummus/i}
+];
+function isAllergy(a){return a.grp==='allergen'||a.k==='fish'||a.k==='shell'}
+var MEATFREE=/\b(meatless|impossible|beyond|plant[- ]?based|vegan|vegetarian|veggie|tofu|seitan|fishless|garden burger|black bean burger|faux|mock)\b/i;
+var ZEROOK=/\b(water|seltzer|sparkling|club soda|ice|coffee|espresso|americano|tea|diet|zero|sugar[- ]free|unsweetened|lemon|lime|salt|pepper|vinegar|hot sauce|sriracha|mustard|sweetener|splenda|stevia|equal|sweet.?n.?low|crystal light|spices?|seasoning|herbs?)\b/i;
+var PLANTMILK=/\b(soy|oat|almond|coconut|rice|cashew|hemp|pea|plant|non-?dairy|dairy[- ]free|vegan)[- ]?(milk|cheese|butter|yogurt|cream|beverage|creamer)s?\b|\b(peanut|apple|sunflower|cocoa|shea|almond|cashew|nut|seed|soy) butter\b|cream of tartar|coconut cream/gi;
+var DAIRYFREE=/\b(soy|oat|almond|coconut|rice|plant|non-?dairy|dairy[- ]free|vegan)\s*(milk|cheese|butter|yogurt|cream)|\bvegan\b/i;
+var PORKFREE=/\b(turkey|chicken|beef|vegan|meatless|plant|impossible|beyond|tofu)\b/i;
+var DIETS={none:[],pesc:['pork','beef','poultry','meat'],vegetarian:['pork','beef','poultry','meat','fish','shell'],vegan:['pork','beef','poultry','meat','fish','shell']};
+var DIETNAME={none:'Anything',pesc:'Pescatarian',vegetarian:'Vegetarian',vegan:'Vegan'};
+var MODES={
+  balanced:{name:'Eat well',blurb:'Balanced meals with solid protein, plenty of fiber and veggies, easy on sodium and sugar.'},
+  protein:{name:'More protein',blurb:'Same calories, more protein. Good if you lift or play a sport.'},
+  cut:{name:'Lose fat',blurb:'A gentle calorie cut that keeps protein high so you keep your muscle.'},
+  bulk:{name:'Build muscle',blurb:'Extra calories and protein to gain size and strength.'}
+};
+var BEV=/frappuccino|\btea\b|coffee|latte|soda|juice|lemonade|refresher|cold brew|americano|espresso|mocha|macchiato|chai|cappuccino|cocoa|smoothie|shake|water\b|fanta|sprite|coke|cola|pepsi|dr\.? ?pepper|mountain dew|crush|gatorade|powerade|\bmilk$|soy milk|oat milk|almond milk|rice milk|chocolate milk|kombucha|energy drink|red bull|celsius/i;
+var COND=/furikake|giardiniera|caramelized onion|relish|cream cheese|marmalade|\bseeds\b|grated|chopped|crushed|diced (ham|bacon|onion)|croutons|garnish|sprinkles|pickle|olives|jalape|bacon bits|shredded|cheese slice|sliced cheese|american cheese|swiss cheese|provolone|pepper jack|sauce|dressing|syrup|creamer|ketchup|mustard|mayo|jam\b|jelly|preserves|seasoning|spice|granulated|garlic powder|salsa|vinaigrette|gravy|dip\b|spread|butter\b|oil\b|sugar\b|sweetener|topping|batter|breading|panko|crackers?|saltines?|cheez|sliced pepperoni|sour cream|guacamole|sliced (red |white )?onion|lettuce leaf|tomato slice|sliced tomato|\bbun\b|tortilla|wrap shell|pita bread|hamburger roll|hot dog roll|popcorn|chips\b|lemon wedge|lime wedge|whipped|marshmallow/i;
+var CEREAL=/cereal|loops|chex|cheerios|corn flakes|frosted|lucky charms|raisin bran|granola|mini.?wheats|kix|rice krispies|special k|cap'?n crunch|cinnamon toast crunch|cocoa puffs|honey nut|apple jacks|life cereal|waffle batter|pancake batter/i;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function r0(n){return Math.round(n)}
+function dateKey(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function normDate(s){var m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s||'');return m?m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0'):''}
+
+function prep(raw){
+  raw.bySlug={};
+  raw.sites.forEach(function(s){raw.bySlug[s.slug]=s;s._n=new Array(s.items.length)});
+  return raw;
+}
+function normItem(data,site,i){
+  if(site._n[i])return site._n[i];
+  var r=site.items[i],n=r[2]||[],tags=(r[3]||[]).map(function(t){return data.tags[t]}).filter(Boolean);
+  var name=(r[0]||'').trim(),groups={},may={};
+  var hay=(name+' '+(r[4]||'')+' '+(r[5]||'')).replace(/(ham)?burger (bun|roll)s?|hot ?dog (bun|roll)s?/ig,'bun');
+  var vegTag=tags.indexOf('Vegan')>=0||tags.indexOf('Vegetarian')>=0,meatFree=vegTag||MEATFREE.test(name);
+  AL.forEach(function(a){
+    var tagHit=tags.some(function(t){return a.re.test(t)&&!/\*$/.test(t)});
+    if(!tagHit&&tags.some(function(t){return a.re.test(t)&&/\*$/.test(t)})&&(a.grp==='allergen'||a.grp==='meat'))may[a.k]=1;
+    var rxHit=a.rx&&a.rx.test(hay);
+    if(rxHit&&(a.grp==='meat'||a.grp==='hidden')&&meatFree)rxHit=false;
+    if(rxHit&&a.k==='pork'&&PORKFREE.test(name)&&!/\bpork\b/i.test(hay))rxHit=false;
+    if(rxHit&&a.k==='milk'&&DAIRYFREE.test(name))rxHit=false;
+    if(rxHit&&a.k==='milk'&&!a.rx.test(hay.replace(PLANTMILK,' ')))rxHit=false;
+    if(rxHit&&a.k==='gluten'&&(/gluten[- ]free|\bgf\b/i.test(name)||tags.indexOf('Avoiding Gluten')>=0)&&!/\bwheat\b/i.test(hay))rxHit=false;
+    if(tagHit||rxHit)groups[a.k]=1;
+  });
+  var it={i:i,key:name+'|'+(r[1]||''),name:name,portion:r[1]||'',
+    cal:n[NK.C],p:n[NK.P]||0,c:n[NK.CB]||0,f:n[NK.F]||0,sug:n[NK.SU]||0,fi:n[NK.FI]||0,na:n[NK.NA]||0,sat:n[NK.SAT]||0,ch:n[NK.CH]||0,
+    naKnown:typeof n[NK.NA]==='number',tags:tags,groups:groups,may:may,desc:r[4]||'',ing:r[5]||''};
+  it.mic={};MICROS.forEach(function(m){var v=n[m.idx];it.mic[m.k]=(typeof v==='number')?v:null});
+  it.ok=typeof it.cal==='number'&&it.cal>0;it.zero=it.cal===0&&!it.p&&!it.c&&!it.f&&(BEV.test(name)||ZEROOK.test(name));
+  it.partial=it.ok&&n[NK.P]==null&&n[NK.CB]==null&&n[NK.F]==null;
+  it.bev=BEV.test(name)||/^milk\b/i.test(name)||(/fl\.?\s*oz/i.test(it.portion)&&!/soup|chili|stew|chowder|bisque|broth/i.test(name));it.cond=COND.test(name);it.cereal=CEREAL.test(name);
+  var mc=it.p*4+it.c*4+it.f*9;it.calc=Math.round(mc);
+  var oz=/^\s*([\d.]+)\s*(oz|ounce)/i.exec(it.portion),perOz=oz&&+oz[1]>0?it.cal/+oz[1]:0;
+  it.check=false;
+  if(it.ok&&!it.partial){
+    if(it.cal>1500){it.check=true;it.checkWhy='This listing says '+r0(it.cal)+' cal for one serving ('+it.portion+'). That looks like a whole tray or pie, or a data error.'}
+    else if(it.fi>it.c+1||(it.fi>=15&&it.cal<250)){it.check=true;it.checkWhy='This listing says '+r0(it.fi)+' g of fiber for '+r0(it.cal)+' cal and '+r0(it.c)+' g carbs. That isn\u2019t possible for this food, so the numbers are probably wrong.'}
+    else if(it.naKnown&&it.na>5000){it.check=true;it.checkWhy='This listing says '+r0(it.na).toLocaleString()+' mg sodium for '+it.portion+'. That\u2019s more than two days\u2019 worth, so the portion or numbers are probably wrong.'}
+    else if(perOz>270){it.check=true;it.checkWhy='This listing says '+r0(it.cal)+' cal for '+it.portion+', which is more than almost any food per ounce. The portion or calories are probably wrong.'}
+    else if(it.cal>=50&&Math.abs(mc-it.cal)/it.cal>0.35){it.check=true;it.checkWhy='The listed '+r0(it.cal)+' cal doesn’t match its protein, carbs and fat, which add up to about '+it.calc+' cal. The real number is probably somewhere between.'}
+  }
+  site._n[i]=it;return it;
+}
+function allowed(it,prof){
+  var d=prof.diet||'none';
+  if(d==='vegan'&&it.tags.indexOf('Vegan')<0)return false;
+  var av=(prof.avoid||[]).concat(DIETS[d]||[]);
+  for(var j=0;j<av.length;j++){if(it.groups[av[j]])return false;if(!prof.mayOk&&it.may&&it.may[av[j]])return false}
+  return true;
+}
+var METS={
+  lift:{label:'Lifting',v:[3.5,5,6],eff:['long rests, heavy singles','typical session, 1–2 min rests','short rests, supersets']},
+  run:{label:'Running',v:[8.5,9.3,11],eff:['about 12 min/mile','about 10 min/mile','about 8.5 min/mile'],dist:true},
+  bike:{label:'Cycling',v:[4,7,9],eff:['easy ride','steady, general','hard, self-pushed']},
+  sport:{label:'Sport or practice',v:[4.5,6.5,8.5],eff:['light practice, drills','full practice','game or scrimmage']},
+  hiit:{label:'HIIT or circuit',v:[5,7,9],eff:['easy circuit','moderate intervals','all-out intervals']},
+  swim:{label:'Swimming',v:[5.8,8.3,10],eff:['easy laps','steady laps','fast laps']},
+  walk:{label:'Walking',v:[3,3.5,4.5],eff:['slow walk','normal pace','brisk or carrying a bag']}
+};
+var RUNPACE=[[12,8.5],[10,9.3],[8.5,11],[7.5,12]];
+function runMet(minPerMile){if(minPerMile>=12)return 8.5;if(minPerMile<=7.5)return 12;for(var i=0;i<RUNPACE.length-1;i++){var a=RUNPACE[i],b=RUNPACE[i+1];if(minPerMile<=a[0]&&minPerMile>=b[0])return a[1]+(b[1]-a[1])*(a[0]-minPerMile)/(a[0]-b[0])}return 9.3}
+function leanMass(prof){var kg=prof.lb*0.45359237,cm=(prof.ft*12+prof.inch)*2.54;return prof.sex==='f'?0.252*kg+0.473*cm-48.3:0.407*kg+0.267*cm-19.2}
+var INTS=['Easy','Moderate','Hard'];
+function workoutKcal(w,kg){
+  if(w.watch>0)return Math.round(w.watch*0.75);
+  var m=METS[w.type];if(!m||!(w.min>0))return 0;
+  var met=m.v[w.int==null?1:w.int];if(w.type==='run'&&w.mi>0)met=runMet(w.min/w.mi);
+  return Math.round(Math.max(0,met-1)*kg*(w.min/60));
+}
+function dayTypeOf(sessions){
+  if(!sessions||!sessions.length)return 'rest';
+  var endu=sessions.some(function(w){return /run|bike|swim/.test(w.type)&&w.min>=60});
+  var cardio=sessions.filter(function(w){return /run|bike|swim|sport|hiit/.test(w.type)}).reduce(function(a,w){return a+(w.min||0)},0);
+  var real=sessions.some(function(w){return w.type!=='walk'});
+  return endu||cardio>=120?'endurance':real?'train':'rest';
+}
+var CARBS={rest:{cut:3,protein:4,balanced:4,bulk:5},train:{cut:4,protein:5.5,balanced:5.5,bulk:7},endurance:{cut:6,protein:7,balanced:7,bulk:8}};
+function targets(prof,wk){
+  var kg=prof.lb*0.45359237,cm=(prof.ft*12+prof.inch)*2.54,m=cm/100,bmi=kg/(m*m);
+  var bmr=10*kg+6.25*cm-5*prof.age+(prof.sex==='m'?5:-161);
+  var mult=prof.trainOn?1.35:({sed:1.2,light:1.375,mod:1.55,heavy:1.725}[prof.act]||1.55);
+  var burn=prof.trainOn&&wk?wk.kcal:0,tdee=bmr*mult+burn;
+  var cutBlocked=prof.goal==='cut'&&(prof.age<18||bmi<18.5),floorRaised=false;
+  var cal=prof.goal==='cut'&&!cutBlocked?tdee*0.82:prof.goal==='bulk'?tdee+350:tdee;
+  if(prof.goal==='cut'&&!cutBlocked){var floor=Math.min(tdee,prof.sex==='f'?1500:1800);if(cal<floor){cal=floor;floorRaised=true}}
+  var ffm=leanMass(prof),ea=null,eaRaised=false;
+  if(burn>0){ea=(cal-burn)/ffm;if(ea<30&&prof.goal==='cut'){cal=30*ffm+burn;eaRaised=true;ea=30}}
+  cal=Math.round(cal/25)*25;
+  var refKg=bmi>30?27*m*m:kg;
+  var pr=Math.round(refKg*(prof.goal==='bulk'?1.8:prof.goal==='cut'?2.2:prof.goal==='balanced'?1.6:2.0)/5)*5;
+  var dt=prof.trainOn&&wk?wk.dayType:(prof.act==='heavy'?'train':'rest');
+  var fatMin=Math.round(cal*0.2/9),ceil=refKg*CARBS[dt][prof.goal],room=(cal-4*pr-9*fatMin)/4;
+  var carbs=Math.max(0,Math.round(Math.min(ceil,room)));var fatMaxC=Math.round((cal-4*pr-9*Math.round(cal*0.35/9))/4);if(carbs<fatMaxC)carbs=fatMaxC;
+  return{cal:cal,p:pr,bmr:Math.round(bmr),mult:mult,burn:burn,tdee:Math.round(tdee),kg:kg,carbs:carbs,fatMin:fatMin,fat:Math.max(fatMin,Math.round((cal-4*pr-4*carbs)/9)),dayType:dt,refKg:refKg,bmi:bmi,ffm:ffm,ea:ea,eaRaised:eaRaised,cutBlocked:cutBlocked,floorRaised:floorRaised};
+}
+function dayTargets(prof,wk){
+  if(wk===undefined&&typeof trainToday==='function')wk=trainToday();
+  var t=targets(prof,wk);
+  return{cal:prof.calO||t.cal,p:prof.pO||t.p,t:t,wk:wk};
+}
+function mealShare(name){
+  var n=(name||'').toLowerCase();
+  if(n.indexOf('breakfast')>=0)return 0.25;
+  if(n.indexOf('lunch')>=0||n.indexOf('brunch')>=0)return 0.35;
+  if(n.indexOf('dinner')>=0)return 0.40;
+  if(/late|snack/.test(n))return 0.15;
+  return 0.33;
+}
+var SH={breakfast:0.25,lunch:0.35,dinner:0.40};
+function mealKey(n){n=(n||'').toLowerCase();return n.indexOf('breakfast')>=0?'breakfast':(n.indexOf('lunch')>=0||n.indexOf('brunch')>=0)?'lunch':n.indexOf('dinner')>=0?'dinner':''}
+var ORDER=['breakfast','lunch','dinner'];
+function adaptBudget(prof,period,logged,now){
+  var d=dayTargets(prof),base=budgetFor(prof,period),k=mealKey(period);
+  if(!logged||!logged.length)return{cal:base.cal,p:base.p,c:base.c,adj:false};
+  now=now||new Date();var h=now.getHours()+now.getMinutes()/60;
+  var ended={breakfast:h>=10.5,lunch:h>=16,dinner:false};
+  var ec=0,ep=0,done={};
+  logged.forEach(function(m){ec+=m.tot.cal;ep+=m.tot.p;var kk=mealKey(m.period);if(kk)done[kk]=1});
+  var lc=Math.round(d.cal-ec),lp=Math.round(d.p-ep);
+  var out={adj:true,leftCal:lc,leftP:lp};
+  if(k&&done[k]){out.after=true;out.cal=Math.max(50,Math.min(base.cal,Math.round(Math.max(0,lc)/10)*10));out.p=Math.max(5,Math.min(base.p,Math.max(0,lp)));return out}
+  var left=ORDER.filter(function(x){return x===k||(!done[x]&&!ended[x])});
+  var sum=left.reduce(function(a,x){return a+SH[x]},0);
+  var share=k?SH[k]/sum:(sum?Math.min(1,mealShare(period)/sum):1);
+  out.cal=Math.max(50,Math.round(Math.max(0,lc)*share/10)*10);out.p=Math.max(5,Math.round(Math.max(0,lp)*share));
+  if(base.c)out.c=base.c;
+  var cap=Math.round(d.cal*0.45/10)*10,pcap=Math.round(d.p*0.45);if(out.cal>cap){var sn=out.cal-cap;out.cal=cap;if(sn>=150)out.snack=sn}if(out.p>pcap)out.p=pcap;
+  return out;
+}
+function parseRanges(h){
+  return String(h||'').split(/,\s*/).map(function(r){var m=/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/.exec(r);if(!m)return null;var a=+m[1]*60+ +m[2],b=+m[3]*60+ +m[4];if(b<=a)b+=1440;return[a,b]}).filter(Boolean);
+}
+function f12(x){var hh=Math.floor(x/60)%24,mm=x%60,ap=hh>=12?'PM':'AM',h12=hh%12||12;return h12+(mm?':'+String(mm).padStart(2,'0'):'')+' '+ap}
+function hoursText(h){return parseRanges(h).map(function(r){return f12(r[0])+'–'+f12(r[1])}).join(', ')}
+function hoursState(loc,now){
+  now=now||campusNow(loc);
+  var mins=now.getHours()*60+now.getMinutes(),y=new Date(now);y.setDate(y.getDate()-1);
+  var hy=loc.hours?loc.hours[dateKey(y)]:null;
+  if(hy){var ry=parseRanges(hy);for(var j=0;j<ry.length;j++){if(ry[j][1]>1440&&mins+1440<ry[j][1])return{open:true,txt:'Open now · until '+f12(ry[j][1])}}}
+  var h=loc.hours?loc.hours[dateKey(now)]:undefined;
+  if(h===undefined)return{open:/^Open/.test(loc.status||''),txt:loc.status||'',stale:true};
+  if(h===null||h==='')return{open:false,txt:'Closed today'};
+  var ranges=parseRanges(h);
+  for(var i=0;i<ranges.length;i++){if(mins>=ranges[i][0]&&mins<ranges[i][1])return{open:true,txt:'Open now · until '+f12(ranges[i][1])}}
+  var nx=ranges.filter(function(r){return r[0]>mins})[0];
+  return nx?{open:false,txt:'Closed now · opens '+f12(nx[0])}:{open:false,txt:'Closed for the day'};
+}
+var EXTRAS=[
+  ['Banana','1 medium',105,1.3,27,0.4,3.1],['Apple','1 medium',95,0.5,25,0.3,4.4],
+  ['2% milk','1 cup',122,8,12,4.8,0],['Skim milk','1 cup',83,8,12,0.2,0],
+  ['Hard-boiled egg','1 large',78,6.3,0.6,5.3,0],['Peanut butter','1 tbsp',95,3.5,3.5,8,0.9],
+  ['Greek yogurt, plain nonfat','3/4 cup',100,17,6,0.7,0],['Cottage cheese, 2%','1/2 cup',90,12,5,2.5,0],
+  ['Protein shake (whey + water)','1 scoop',120,24,3,1.5,0],['Oatmeal, cooked','1 cup',166,6,28,3.6,4],
+  ['Salad greens','2 cups',15,1.2,2.9,0.2,1.3]
+];
+var XN={'Banana':[1,14,0.1],'Apple':[2,19,0.1],'2% milk':[115,12,3.1],'Skim milk':[103,12,0.1],'Hard-boiled egg':[62,0.6,1.6],'Peanut butter':[73,1.7,1.6],'Greek yogurt, plain nonfat':[61,5.5,0.2],'Cottage cheese, 2%':[350,4,1.4],'Cottage cheese':[350,4,1.4],'Protein shake (whey + water)':[100,1,0.5],'Oatmeal, cooked':[9,1.1,0.7],'Salad greens':[30,1,0],
+  'Mixed greens':[30,1,0],'Spinach':[47,0.3,0],'Romaine':[8,1.1,0],'Chickpeas':[100,2,0.1],'Edamame':[5,0.8,0.2],'Tofu cubes':[7,0.5,0.6],'Black beans':[115,0.1,0],'Kidney beans':[110,0.5,0],'Beets':[50,3,0],'Cucumber':[1,0.5,0],'Cherry tomatoes':[2,1,0],'Shredded carrots':[19,1.3,0],'Broccoli florets':[7,0.4,0],'Bell peppers':[1,1.6,0],'Red onion':[1,0.8,0],'Corn':[40,2.5,0.1],'Mushrooms':[1,0.3,0],
+  'Shredded cheddar':[90,0,2.7],'Feta':[175,0.8,2.8],'Sunflower seeds':[50,0.3,0.5],'Croutons':[87,0.4,0.4],'Hummus':[115,0.1,0.4],'Ranch':[270,1.4,2.1],'Caesar':[320,0.6,2.6],'Italian':[300,2.5,1],'Light Italian':[280,1.5,0.2],'Balsamic vinaigrette':[260,2.5,1.3],'Honey mustard':[200,6,1.8],'Oil and vinegar':[0,0,1.9],'Vinegar or lemon only':[0,0.1,0]};
+function mkItem(name,portion,cal,p,c,f,fi,custom){
+  var it={i:-1,key:(custom?'c|'+Math.round(+cal||0)+'|':'x|')+name+'|'+portion,name:name,portion:portion,cal:+cal||0,p:+p||0,c:+c||0,f:+f||0,sug:0,fi:+fi||0,na:0,sat:0,ch:0,
+    tags:[],groups:{},naKnown:!!(!custom&&XN[name]),desc:custom?'Your custom food.':'Typical values for a common food. Not from the dining hall\u2019s data.',ing:'',mic:{},extra:true,custom:!!custom,bev:false,cond:false};
+  if(custom)it.tags=['Vegan','Vegetarian'];else if(/banana|apple|oatmeal|salad greens|peanut butter/i.test(name))it.tags=['Vegan','Vegetarian'];else if(/milk|yogurt|cottage|egg|whey/i.test(name))it.tags=['Vegetarian'];
+  if(!custom&&XN[name]){it.na=XN[name][0];it.sug=XN[name][1];it.sat=XN[name][2]}
+  MICROS.forEach(function(m){it.mic[m.k]=null});
+  AL.forEach(function(a){if(a.rx&&a.rx.test(name))it.groups[a.k]=1});
+  if(/milk|yogurt|cheese|whey|ranch/i.test(name))it.groups.milk=1;
+  if(/egg|ranch/i.test(name))it.groups.egg=1;
+  if(/peanut/i.test(name))it.groups.peanut=1;
+  it.ok=it.cal>0;it.calc=Math.round(it.p*4+it.c*4+it.f*9);it.check=false;
+  return it;
+}
+function dayHit(meals,d,mode){
+  if(!meals||!meals.length)return false;
+  var c=0,p=0;meals.forEach(function(m){c+=m.tot.cal;p+=m.tot.p});
+  if(p<d.p*0.9)return false;
+  if(mode==='bulk'&&c<d.cal*0.9)return false;
+  if(mode==='balanced'&&c>d.cal*1.1)return false;
+  return true;
+}
+function streak(log,d,mode,today){
+  var n=0,x=new Date(today||new Date());
+  if(!dayHit(log[dateKey(x)],d,mode))x.setDate(x.getDate()-1);
+  while(dayHit(log[dateKey(x)],d,mode)){n++;x.setDate(x.getDate()-1)}
+  return n;
+}
+function budgetFor(prof,period){var d=dayTargets(prof),s=mealShare(period);return{cal:Math.round(d.cal*s/10)*10,p:Math.round(d.p*s),c:d.t&&d.t.dayType!=='rest'&&prof.trainOn?Math.round(d.t.carbs*s):0}}
+
+var MICROS=[
+  {k:'fe',label:'Iron',unit:'mg',dv:18,idx:12,what:'carries oxygen to your muscles and brain, so low iron means tiredness and weaker workouts',hint:'beans, spinach, red meat, fortified cereal'},
+  {k:'ca',label:'Calcium',unit:'mg',dv:1300,idx:11,what:'builds bones and teeth and powers muscle contractions',hint:'dairy, tofu, leafy greens'},
+  {k:'k',label:'Potassium',unit:'mg',dv:4700,idx:10,what:'helps muscles and nerves work and balances fluids',hint:'potatoes, beans, yogurt, bananas'},
+  {k:'vd',label:'Vitamin D',unit:'IU',dv:800,idx:15,what:'helps you absorb calcium for bones and supports muscle and immune health',hint:'fish, eggs, fortified milk'},
+  {k:'vc',label:'Vitamin C',unit:'mg',dv:90,idx:14,what:'helps make collagen for skin and tendons, boosts iron absorption and supports immunity',hint:'peppers, broccoli, citrus, berries'},
+  {k:'va',label:'Vitamin A',unit:'mcg',dv:900,idx:13,what:'supports vision, skin renewal and immunity',hint:'carrots, sweet potato, spinach, eggs'}
+];
+
+var NUTRI=[
+  {n:'Protein',tags:'Muscle · Skin · Hair',txt:'Muscle, skin and hair are all built from protein. Spreading it across meals gives your muscles the building blocks to repair after training.',foods:'chicken, eggs, fish, tofu, beans, Greek yogurt'},
+  {n:'Fiber',tags:'Gut · Heart · Fullness',txt:'Fiber feeds the bacteria in your gut, helps lower LDL cholesterol and keeps you full longer. Most people get about half of what they need.',foods:'beans, oats, fruit, vegetables, whole grains'},
+  {n:'Iron',tags:'Energy · Muscle · Brain',txt:'Iron carries oxygen in your blood to your muscles and brain. Low iron can mean tiredness, weaker workouts and brain fog, and it is one common reason for extra hair shedding. Eating plant iron with vitamin C helps you absorb more of it.',foods:'beans, spinach, red meat, fortified cereal'},
+  {n:'Calcium',tags:'Bones · Muscle · Nerves',txt:'Almost all your calcium is stored in bones and teeth, and your body also needs it for muscle contractions and nerve signals. You keep building bone into your late 20s, so college is a good time to get enough.',foods:'milk, yogurt, tofu, leafy greens'},
+  {n:'Vitamin D',tags:'Bones · Muscle · Immune',txt:'Vitamin D helps you absorb calcium, so it supports bone, and it plays a part in muscle and immune function. Winter sun in Minnesota makes very little, so food matters, and it is fair to ask a doctor whether you need more.',foods:'fatty fish, eggs, fortified milk'},
+  {n:'Vitamin C',tags:'Skin · Healing · Immune',txt:'Your body needs vitamin C to make collagen, the protein in skin, tendons and cartilage, and it helps wounds heal. It also boosts how much iron you absorb from plants.',foods:'peppers, broccoli, citrus, berries'},
+  {n:'Vitamin A',tags:'Eyes · Skin · Immune',txt:'Vitamin A keeps your eyes working in dim light and helps skin and the linings of your gut and lungs renew. Get it from food: too much from supplements can be harmful.',foods:'carrots, sweet potato, spinach, eggs'},
+  {n:'Potassium',tags:'Muscle · Heart · Cramps',txt:'Potassium helps muscles contract, nerves fire and your body balance fluid and blood pressure. It works against sodium, so potassium-rich foods help balance a salty meal.',foods:'potatoes, beans, yogurt, bananas'},
+  {n:'Omega-3 fats',tags:'Brain · Heart',txt:'Fatty fish gives EPA and DHA, omega-3 fats that support brain and heart health. This isn’t in the dining data, so look for salmon, tuna or trout on the menu.',foods:'salmon, tuna, trout, walnuts'},
+  {n:'Choline',tags:'Brain · Liver',txt:'Choline helps your brain and liver work and is used to build cell membranes. Eggs are one of the richest sources. Not in the dining data.',foods:'eggs, chicken, beef, soybeans'}
+];
+function whyPanel(){
+  return '<details class="panel fold-p"><summary><h2>Why these nutrients matter</h2><span class="mono">tap to read</span></summary>'+
+    '<ul class="facts" style="margin-top:10px">'+NUTRI.map(function(x){return '<li><b>'+esc(x.n)+'</b> <span class="mono" style="color:var(--muted);font-size:.75rem">'+esc(x.tags)+'</span><br>'+esc(x.txt)+'<br><small class="mono" style="color:var(--muted)">Foods: '+esc(x.foods)+'</small></li>'}).join('')+'</ul>'+
+    '<p class="hint"><b>Sore after a workout?</b> That mostly comes from the training itself. Enough total calories and protein, sleep and slow progress matter most, and no single food erases soreness. <b>Hair and skin?</b> Eating enough protein, iron and vitamin C helps them stay healthy, but food can’t override genetics. Pattern hair loss is mostly inherited, so see a doctor if you notice sudden shedding or thinning.</p>'+
+    '<p class="hint">General nutrition information, not medical advice.</p></details>';
+}
+function lab(m){return /^Vitamin/.test(m.label)?'vitamin '+m.label.slice(8):m.label.toLowerCase()}
+function micPct(it,m){var v=it.mic&&it.mic[m.k];return v==null?null:v/m.dv*100}
+function micTotals(plate){
+  var out={};
+  MICROS.forEach(function(m){var sum=0,known=false;plate.forEach(function(e){var v=e.item.mic&&e.item.mic[m.k];if(v!=null){sum+=v*e.q;known=true}});out[m.k]={sum:sum,known:known,pct:sum/m.dv*100}});
+  return out;
+}
+function micInsights(plate,share){
+  var out=[];if(!plate.length)return out;
+  var mt=micTotals(plate),goal=share*100;
+  var strong=MICROS.filter(function(m){return mt[m.k].known&&mt[m.k].pct>=goal*0.8}).sort(function(a,b){return mt[b.k].pct-mt[a.k].pct}).slice(0,2);
+  var low=MICROS.filter(function(m){var n=plate.filter(function(e){return e.item.mic[m.k]!=null}).length;return n*2>=plate.length&&mt[m.k].pct<goal*0.4}).slice(0,2);
+  strong.forEach(function(m){out.push('Strong on '+lab(m)+' ('+r0(mt[m.k].pct)+'% of the daily value). It '+m.what+'.')});
+  low.forEach(function(m){out.push('Light on '+lab(m)+' ('+r0(mt[m.k].pct)+'% of the daily value). Try '+m.hint+'.')});
+  return out;
+}
+var V=['Vegan','Vegetarian'],VG=['Vegetarian'];
+var SALAD=[
+  ['Greens','Mixed greens','2 cups',15,1.2,2.9,0.2,1.3,V],
+  ['Greens','Spinach','2 cups',14,1.7,2.2,0.2,1.3,V],
+  ['Greens','Romaine','2 cups',16,1.2,3.1,0.3,2,V],
+  ['Protein','Chickpeas','1/4 cup',67,3.6,11.2,1.1,3.1,V],
+  ['Protein','Edamame','1/4 cup',47,4.6,3.5,2,2,V,['soy']],
+  ['Protein','Tofu cubes','1/4 cup',70,8,1.5,4.2,1,V,['soy']],
+  ['Protein','Hard-boiled egg','1 large',78,6.3,0.6,5.3,0,VG,['egg']],
+  ['Protein','Black beans','1/4 cup',57,3.8,10.2,0.2,3.8,V],
+  ['Protein','Kidney beans','1/4 cup',56,3.8,10.1,0.2,3.3,V],
+  ['Protein','Cottage cheese','1/2 cup',90,12,5,2.5,0,VG,['milk']],
+  ['Veggies','Beets','1/4 cup',19,0.7,4.2,0.1,0.9,V],
+  ['Veggies','Cucumber','1/4 cup',4,0.2,1,0,0.1,V],
+  ['Veggies','Cherry tomatoes','1/4 cup',7,0.3,1.4,0.1,0.4,V],
+  ['Veggies','Shredded carrots','1/4 cup',11,0.3,2.7,0.1,0.8,V],
+  ['Veggies','Broccoli florets','1/4 cup',7,0.6,1.5,0.1,0.6,V],
+  ['Veggies','Bell peppers','1/4 cup',11,0.4,2.2,0.1,0.8,V],
+  ['Veggies','Red onion','2 tbsp',8,0.2,1.9,0,0.3,V],
+  ['Veggies','Corn','1/4 cup',39,1.4,8.6,0.6,1,V],
+  ['Veggies','Mushrooms','1/4 cup',4,0.6,0.6,0.1,0.2,V],
+  ['Toppings','Shredded cheddar','2 tbsp',57,3.2,0.4,4.7,0,VG,['milk']],
+  ['Toppings','Feta','2 tbsp',50,2.7,0.8,4,0,VG,['milk']],
+  ['Toppings','Sunflower seeds','1 tbsp',52,1.9,2.2,4.5,1,V],
+  ['Toppings','Croutons','1/4 cup',47,1.1,6.4,1.8,0.5,V,['gluten']],
+  ['Toppings','Hummus','2 tbsp',50,2.4,4.3,2.9,1.8,V,['sesame']],
+  ['Dressings','Ranch','2 tbsp',129,0.4,1.8,13.4,0,VG,['milk','egg']],
+  ['Dressings','Caesar','2 tbsp',158,0.6,1,17,0,[],['milk','egg','fish']],
+  ['Dressings','Italian','2 tbsp',71,0.1,3.6,6.3,0,V],
+  ['Dressings','Light Italian','2 tbsp',23,0.1,2.2,1.5,0,V],
+  ['Dressings','Balsamic vinaigrette','2 tbsp',90,0,3,9,0,V],
+  ['Dressings','Honey mustard','2 tbsp',139,0.3,7,12,0,VG,['egg']],
+  ['Dressings','Oil and vinegar','1 tbsp oil',122,0,0.2,13.6,0,V],
+  ['Dressings','Vinegar or lemon only','2 tbsp',6,0,0.3,0,0,V]
+];
+var SALAD_ITEMS=SALAD.map(function(x){
+  var it=mkItem(x[1],x[2],x[3],x[4],x[5],x[6],x[7]);
+  it.key='s|'+x[1]+'|'+x[2];it.salad=true;it.sgroup=x[0];it.tags=(x[8]||[]).slice();
+  it.groups={};(x[9]||[]).forEach(function(g){it.groups[g]=1});
+  it.desc='Salad bar. It isn’t on the online menu, so these are typical values for one scoop. Real scoops vary.';
+  if(x[0]==='Toppings'||x[0]==='Dressings')it.cond=true;
+  return it;
+});
+var QUICK_SALADS=[
+  {name:'Protein salad',items:[['Spinach',1],['Chickpeas',2],['Edamame',2],['Hard-boiled egg',1],['Beets',1],['Cucumber',1],['Light Italian',1]]},
+  {name:'Plant power',items:[['Mixed greens',1],['Tofu cubes',2],['Edamame',2],['Black beans',1],['Shredded carrots',1],['Bell peppers',1],['Balsamic vinaigrette',1]]},
+  {name:'Hearty salad',items:[['Romaine',1],['Chickpeas',2],['Hard-boiled egg',2],['Corn',1],['Shredded cheddar',1],['Sunflower seeds',1],['Ranch',1]]}
+];
+function saladByName(n){return SALAD_ITEMS.filter(function(x){return x.name===n})[0]}
+function pd(it){return it.ok?it.p*4/it.cal:0}
+function rate(it,mode,prof){
+  if(it.zero)return{v:'none',label:'0 cal',reason:'Listed at 0 calories (like water, plain coffee or tea), so it won\u2019t change your numbers.',why:[],what:''};
+  if(!it.ok)return{v:'none',label:'No data',reason:'No calories are listed, so it can’t be counted.',why:[],what:''};
+  if(it.partial)return{v:'none',label:'Cal only',reason:'Only calories are posted for this item, so we can’t rate its protein.',why:[],what:''};
+  if(it.check)return{v:'none',label:'Check',reason:'The numbers for this item look wrong, so we don’t rate it.',why:[],what:''};
+  var q=pd(it),v='okay',reason,P=r0(it.p),K=r0(it.cal),F=r0(it.fi),SU=r0(it.sug);
+  var carbShare=it.c*4/it.cal,fatShare=it.f*9/it.cal;
+  var vegName=VEG.test(it.name)&&!STARCH.test(it.name)&&!/potato|fries|mashed|tuna|egg salad|chicken|shrimp|beef|pork|turkey|ham\b|fish|salmon|pasta|macaroni|rice|wheat berr|bulgur|pilaf|sorbe|cheese|jelly|\bjam\b|preserves|marmalade|cream cheese|seasoning|spice|chipotle|punch|juice|pulp|sauce|dressing|dip\b|salsa|pickled/i.test(it.name)&&!/\btsp\b|teaspoon|packet/i.test(it.portion)&&!it.cond&&!it.cereal&&!it.bev&&!DESSERT.test(it.name)&&it.f<=7;
+  var side=it.cal<=150&&it.p<8&&vegName&&!/cheese|jelly|\bjam\b|preserves|yogurt|yoghurt|fruit snack|gumm|juice|pie\b|crisp|cobbler|cake|sauce|dressing|dip\b/i.test(it.name)&&it.sug<10&&(it.sat||0)<3;
+  if(mode==='balanced'){
+    var mic=MICROS.filter(function(m){var pc=micPct(it,m);return pc!=null&&pc>=20}).map(function(m){return lab(m)});
+    var plus=[],minus=[];
+    if((it.p>=15&&q>=0.15)||(it.p>=10&&q>=0.25))plus.push(P+' g protein');
+    if(it.fi>=4)plus.push(F+' g fiber');
+    if(mic.length)plus.push('rich in '+mic.slice(0,2).join(' and '));
+    if(it.naKnown!==false&&it.na>=900)minus.push(r0(it.na)+' mg sodium');
+    if(it.sug>=20&&!/fruit|berr|apple|banana|yogurt|milk/i.test(it.name))minus.push(SU+' g sugar');
+    if(it.sat>=8)minus.push(r0(it.sat)+' g saturated fat');
+    if(it.cal>=850)minus.push(K+' cal in one serving');
+    if(PROC.test(it.name)&&!/beyond|impossible|plant|vegan|veggie|tofu|meatless/i.test(it.name))minus.push('processed meat');
+    else if(it.naKnown!==false&&it.na>=650&&it.na<900&&it.sat>=6)minus.push('salt and saturated fat');
+    var dessert=DESSERT.test(it.name);
+    if(side&&!minus.length){v='good';reason='A veggie or fruit side'+(it.fi>=2?' with '+F+' g of fiber':'')+'. Easy win for any plate.'}
+    else if(minus.length>=2||(dessert&&it.sug>=15)||(minus.length&&!plus.length&&it.cal>=300)){v='skip';reason=dessert&&it.sug>=15?'A treat: '+SU+' g of sugar. Fine sometimes, not an everyday pick.':'Heavy on '+minus.join(' and ')+(plus.length?', even with '+plus.join(' and '):'')+'.'}
+    else if(!minus.length&&(plus.length>=2||it.p>=15&&q>=0.15)){v='good';reason='Good balance: '+plus.join(', ')+(it.na<600?', and not too salty':'')+'.'}
+    else if(minus.length){v='okay';reason=(plus.length?plus.join(' and ')+', but ':'Watch the ')+minus.join(' and ')+'. Balance it with lighter sides.'}
+    else if(plus.length){v='okay';reason=plus.join(' and ')+'. Pair it with a protein or veggie side to round out the plate.'}
+    else if(it.cal<80){v='okay';reason='A small extra. It won\u2019t change much either way.'}
+    else{v='okay';reason='Not much protein or fiber ('+P+' g protein, '+F+' g fiber). Fine as part of a plate with a protein and a veggie.'}
+    if(dessert&&v!=='skip'){v='okay';reason='A sweet treat. Fine sometimes, not an everyday pick.'}
+  }else if(mode==='protein'){
+    if((it.p>=20&&q>=0.15)||(it.p>=12&&q>=0.3)){v='good';reason=it.p>=20?P+' g of protein in one serving. That is a big piece of your protein goal.':'Lean protein: '+P+' g for just '+K+' cal.'}
+    else if(it.p>=8){v='okay';reason='Some protein ('+P+' g), but pair it with something bigger to reach your goal.'}
+    else if(side){v='okay';reason='A veggie or fruit side. Adds fiber and vitamins, so pair it with a protein.'}
+    else{v='skip';reason=(+P<1?'No protein':'Only '+P+' g of protein')+', so it won’t help a protein goal.'}
+  }else if(mode==='cut'){
+    if((q>=0.3&&it.cal<=450&&it.p>=10)||(vegName&&it.cal<=120&&it.fi>=2&&it.sug<10)||(vegName&&it.cal<=60&&it.f<3)){v='good';reason=(q>=0.3&&it.p>=10)?P+' g of protein for '+K+' cal. Protein-dense without eating your budget.':'Only '+K+' cal'+(it.fi>=2?' with '+F+' g of fiber':'')+'. Adds volume and fiber for very few calories.'}
+    else if((it.cal>600&&q<0.15)||it.sug>=25||(it.cal>450&&q<0.12)||(it.cereal&&it.sug>=8)){v='skip';reason=it.sug>=8&&(it.sug>=25||it.cereal)?SU+' g of sugar in '+K+' cal. Spends your budget without much protein.':K+' cal for only '+P+' g of protein. A poor trade when you\u2019re losing fat.'}
+    else{v='okay';reason='Fits if you balance it: '+K+' cal for '+P+' g of protein.'}
+  }else{
+    if(it.p>=20||(it.p>=18&&it.cal>=250)||(it.cal>=400&&it.p>=12)){v='good';reason=it.p>=20&&it.cal<250?P+' g of protein. Pair it with a starch for the calories you need.':K+' cal with '+P+' g of protein. Real fuel for building.'}
+    else if(it.cal>=150||it.p>=10){v='okay';reason=carbShare>0.55?'Good carb fuel ('+K+' cal). Pair it with a protein.':'Helpful extra calories ('+K+'), but not a main source of protein.'}
+    else if(side){v='okay';reason='A veggie or fruit side. Not much fuel, but it adds fiber and vitamins.'}
+    else{v='skip';reason='Small and light. It barely moves your calories or protein.'}
+  }
+  if(v==='skip'&&(mode==='protein'||mode==='bulk')&&(LEGUME.test(it.name)||/quinoa|whole grain|brown rice|farro|lentil/i.test(it.name)||side)){v='okay';reason='Only '+P+' g of protein, but a good side: fiber and nutrients. Pair it with a bigger protein.'}
+  if(it.sgroup==='Protein'&&it.p<8&&v!=='good'){v='okay';reason='One scoop gives '+P+' g of protein for '+K+' cal. Stack a few protein scoops (chickpeas, edamame, egg) to make it count.'}
+  if(it.naKnown!==false&&it.na>=2000&&v==='good'){v='okay';reason='Very salty: '+r0(it.na).toLocaleString()+' mg sodium, close to a full day\u2019s 2,300 mg. '+reason}
+  if(it.naKnown!==false&&v==='okay'&&(it.na>=2300||(mode==='balanced'&&it.na>=2000))){v='skip';reason='Very salty: '+r0(it.na).toLocaleString()+' mg sodium, about a whole day\u2019s limit in one item.'}
+  prof=prof||(typeof S!=='undefined'?S.prof:null);
+  if(prof&&prof.lowNa&&it.naKnown!==false&&it.na>=800&&v==='good'){v='okay';reason='High sodium ('+r0(it.na)+' mg). '+reason}
+  var lean=fatShare<0.3?(q>=0.4?': very lean protein.':q>=0.3?': lean.':''):'';
+  var why=[P+' g protein for '+K+' cal'+(lean||(q<0.12?': mostly carbs and fat.':'.'))];
+  if(fatShare>=0.5&&it.cal>=150)why.push(r0(fatShare*100)+'% of its calories come from fat.');
+  if(it.fi>=5)why.push(F+' g fiber. Keeps you full.');
+  if(it.sug>=20)why.push(SU+' g sugar.');
+  if(it.sat>=8)why.push(r0(it.sat)+' g saturated fat.');
+  if(it.na>=800)why.push(r0(it.na)+' mg sodium'+(it.na>=1200?'. That is high, over half a day’s limit.':'. A good chunk of the day’s 2,300 mg limit.'));
+  if(it.cal>=900)why.push('A whole meal of calories in one item.');
+  MICROS.forEach(function(m){var pc=micPct(it,m);if(pc!=null&&pc>=20)why.push('Rich in '+lab(m)+' ('+r0(pc)+'% of the daily value). It '+m.what+'.')});
+  var what;
+  if(q>=0.3&&it.cal<=350&&fatShare<0.45)what='Builds and repairs muscle without using much of your calorie budget.';
+  else if(it.p>=18&&it.cal>350)what='Dense protein plus energy. Fuels training and recovery.';
+  else if(carbShare>0.6&&it.fi<3)what='Fast energy. Best around a workout or paired with a protein.';
+  else if(fatShare>0.55)what='Calorie dense from fat. Filling, but it adds up quickly.';
+  else if(it.cal<=80&&it.fi>=2)what='Low calorie volume. Fills the plate and adds vitamins.';
+  else what='A mix of energy and some protein.';
+  return{v:v,label:v==='good'?'Great':v==='okay'?'Okay':'Skip',reason:reason,why:why,what:what};
+}
+function plateInsights(t,b,mode){
+  var out=[];if(!t.cal)return out;
+  if(typeof S!=='undefined'&&S.prof){var pm=Math.round(S.prof.lb*0.45359237*0.4);var bw=(mode==='balanced'||mode==='cut')?'muscle and health':'muscle building';out.push((t.p>=pm?'Solid protein at this meal for '+bw:'Under the '+pm+' g that research suggests per meal for '+bw)+' (about 0.4 g per kg of body weight, spread over 3 to 4 meals).')}
+  var pc=r0(t.p/b.p*100),cc=r0(t.cal/b.cal*100);
+  out.push(r0(t.p)+' g protein is '+pc+'% of what you want from this meal'+(pc>=100&&pc<=160?'. You hit this meal\u2019s protein.':pc>160?'. More than you need here, so you could trade some for carbs or veggies.':'.'));
+  out.push(r0(t.cal)+' calories is '+cc+'% of this meal\u2019s budget.');
+  var mc=t.p*4+t.c*4+t.f*9||1,pp=r0(t.p*4/mc*100),cp=r0(t.c*4/mc*100),fp=100-pp-cp;
+  out.push('Where the calories come from: '+pp+'% protein, '+cp+'% carbs, '+fp+'% fat.');
+  if(t.fi>=8)out.push(r0(t.fi)+' g fiber. Good for staying full.');else if(t.fi<3&&t.cal>300)out.push('Low fiber. A veggie side would help you stay full.');
+  if(t.sug>=30)out.push(r0(t.sug)+' g sugar. That is on the high side.');
+  if(t.na>=1200)out.push(r0(t.na)+' mg sodium. That is '+r0(t.na/2300*100)+'% of the day\u2019s limit in one meal.');
+  return out;
+}
+function pickScore(it,mode){
+  if(mode==='bulk')return it.p+it.cal/40;
+  if(mode==='cut')return it.p*1.5+pd(it)*30+Math.min(it.fi,6)-(it.cal>450?5:0);
+  if(mode==='balanced')return it.p*0.6+Math.min(it.fi,8)*2.5+MICROS.filter(function(m){return (micPct(it,m)||0)>=20}).length*3-(it.na||0)/250-(it.sug||0)/8-(it.sat||0)/3;
+  return it.p+pd(it)*10;
+}
+function topPicks(items,mode,n){
+  var seen={},out=[];
+  items.filter(function(it){return it.ok&&!it.partial&&!it.check&&!it.bev&&!it.cond&&!it.cereal&&it.cal>=60&&rate(it,mode).v==='good'})
+    .sort(function(a,b){return pickScore(b,mode)-pickScore(a,mode)})
+    .forEach(function(it){if(out.length<n&&!seen[it.name]){seen[it.name]=1;out.push(it)}});
+  return out;
+}
+function totals(plate){
+  var t={cal:0,p:0,c:0,f:0,fi:0,sug:0,na:0,sat:0,ch:0};
+  plate.forEach(function(e){var it=e.item,q=e.q;t.cal+=(it.ok?it.cal:0)*q;t.p+=it.p*q;t.c+=it.c*q;t.f+=it.f*q;t.fi+=it.fi*q;t.sug+=it.sug*q;t.na+=it.na*q;t.sat+=(it.sat||0)*q;t.ch+=(it.ch||0)*q});
+  return t;
+}
+var BENEFITS=[
+  {k:'gut',label:'Gut health',rx:/\b(yogurt|yoghurt|kefir)\b/i,txt:'Yogurt and kefir often contain live cultures, which may support gut health and digestion.'},
+  {k:'ferment',label:'Fermented food',rx:/\b(kimchi|sauerkraut|miso|tempeh)\b/i,txt:'Fermented foods like kimchi can contain live microbes that may support gut health.'},
+  {k:'oats',label:'Heart-healthy fiber',rx:/\b(oats?(?![- ]?(milk|beverage|creamer))|oatmeal|overnight oats|barley)\b/i,txt:'Oats and barley have beta-glucan, a fiber that can help lower LDL cholesterol.'},
+  {k:'legume',label:'Fiber + plant protein',rx:/\b(beans?|lentils?|chickpeas?|garbanzo|hummus|edamame|falafel|dal|dhal)\b/i,txt:'Beans, lentils and chickpeas add fiber and plant protein that keep you full.'},
+  {k:'omega3',label:'Omega-3 fats',rx:/\b(salmon|tuna|sardines?|mackerel|trout|herring)\b/i,txt:'Fatty fish gives omega-3 fats (EPA and DHA), which support brain and heart health.'},
+  {k:'berries',label:'Berries',rx:/\b(berr(y|ies)|blueberr\w*|strawberr\w*|raspberr\w*|blackberr\w*|cranberr\w*)/i,txt:'Berries bring vitamin C (for skin collagen), fiber and plant compounds called polyphenols.'},
+  {k:'greens',label:'Greens and crucifers',rx:/\b(spinach|kale|greens|romaine|arugula|broccoli|brussels|cabbage|bok choy|collard)\b/i,txt:'Leafy greens and broccoli add vitamin K (bone health), folate and fiber.'},
+  {k:'orange',label:'Beta-carotene',rx:/\b(sweet potato\w*|carrots?|butternut|squash|pumpkin)\b/i,txt:'Orange veggies are rich in beta-carotene, which your body turns into vitamin A.'},
+  {k:'egg',label:'Choline',rx:/\beggs?\b|omelet/i,txt:'Eggs are one of the best sources of choline, which your brain and liver use, plus complete protein for muscle, skin and hair.'},
+  {k:'fats',label:'Unsaturated fats',rx:/\b(nuts?|almonds?|walnuts?|peanuts?|pecans?|cashews?|pistachios?|seeds|avocado|guacamole|olive oil)\b/i,txt:'Nuts, seeds, avocado and olive oil provide mostly unsaturated fats, plus vitamin E, which supports skin.'},
+  {k:'whole',label:'Whole grains',rx:/\b(whole wheat|whole grain|brown rice|quinoa|farro|bulgur|wild rice)\b/i,txt:'Whole grains keep their fiber, B vitamins and minerals.'},
+  {k:'tomato',label:'Lycopene',rx:/\b(tomato\w*|marinara)\b/i,txt:'Tomatoes provide lycopene, an antioxidant your body absorbs better when they are cooked.'},
+  {k:'redmeat',label:'Iron + B12',rx:/\b(beef|steak|lamb|brisket|meatballs?)\b/i,txt:'Red meat gives heme iron and vitamin B12, both easy for your body to absorb.'}
+];
+function benefitsOf(it){var hay=it.name+' '+(it.desc||'');if(it._ben)return it._ben;if(DESSERT.test(it.name)||/jelly|\bjam\b|preserves|syrup|candy/i.test(it.name)||it.bev&&it.sug>=12||it.sug>=20||(it.sat||0)>=8||PROC.test(it.name)){it._ben=[];return it._ben}it._ben=BENEFITS.filter(function(b){return b.rx.test(hay)&&!(b.k==='fats'&&/\bdonut|doughnut|coconut\b/i.test(it.name))});return it._ben}
+var MT={fe:{m:8,f:18},ca:{m:1000,f:1000,teen:1300},k:{m:3400,f:2600,tm:3000,tf:2300},vd:{m:600,f:600},vc:{m:90,f:75},va:{m:900,f:700}};
+function microTarget(m,prof){var base=microBase(m,prof);if(m.k==='fe'){var f=1;if(prof.diet==='vegetarian'||prof.diet==='vegan')f=1.8;else if(prof.trainOn&&plansOf(prof).some(function(x){return /run|sport|hiit|bike|swim/.test(x.type)}))f=1.3;return Math.round(base*f)}return base}
+function microBase(m,prof){var t=MT[m.k];if(!t)return m.dv;if(prof.age<19&&t.teen)return t.teen;if(prof.age<19&&m.k==='fe')return prof.sex==='f'?15:11;if(prof.age<19&&m.k==='vc')return prof.sex==='f'?65:75;if(prof.age<19&&m.k==='k')return prof.sex==='f'?t.tf:t.tm;return prof.sex==='f'?t.f:t.m}
+function fullTot(plate){
+  var t=totals(plate),o={cal:r0(t.cal),p:r0(t.p),c:r0(t.c),f:r0(t.f),fi:Math.round(t.fi*10)/10,sug:r0(t.sug),na:r0(t.na),sat:Math.round(t.sat*10)/10,ch:r0(t.ch),m:{},mk:{},n:plate.length,ben:[]};
+  MICROS.forEach(function(m){var sum=0,kn=0;plate.forEach(function(e){var v=e.item.mic&&e.item.mic[m.k];if(v!=null){sum+=v*e.q;kn++}});o.m[m.k]=Math.round(sum*10)/10;o.mk[m.k]=kn});
+  var seen={};plate.forEach(function(e){benefitsOf(e.item).forEach(function(b){if(!seen[b.k]){seen[b.k]=1;o.ben.push(b.k)}})});
+  return o;
+}
+function dayTotals(meals){
+  var t={cal:0,p:0,c:0,f:0,fi:0,sug:0,na:0,sat:0,ch:0,m:{},mk:{},n:0,ben:{},full:0};
+  MICROS.forEach(function(m){t.m[m.k]=0;t.mk[m.k]=0});
+  meals.forEach(function(x){var o=x.tot;['cal','p','c','f','fi','sug','na','sat','ch'].forEach(function(k){t[k]+=o[k]||0});
+    if(o.m){t.full++;t.n+=o.n||0;MICROS.forEach(function(m){t.m[m.k]+=o.m[m.k]||0;t.mk[m.k]+=o.mk[m.k]||0})}
+    (o.ben||[]).forEach(function(b){t.ben[b]=(t.ben[b]||0)+1})});
+  return t;
+}
+function scorePlate(t,b,mode){
+  var shortP=Math.max(0,b.p-t.p)/b.p,s;
+  if(mode==='protein')s=-3*shortP-1.2*Math.max(0,t.cal-1.2*b.cal)/b.cal-1.2*Math.max(0,0.8*b.cal-t.cal)/b.cal;
+  else if(mode==='balanced')s=-2*shortP-1.5*Math.max(0,t.cal-1.15*b.cal)/b.cal-1.2*Math.max(0,0.8*b.cal-t.cal)/b.cal+0.03*Math.min(t.fi,15)-0.8*Math.max(0,t.na-b.cal*0.85)/b.cal-0.02*Math.max(0,t.sat-b.cal*0.011);
+  else if(mode==='cut')s=-2.5*shortP-3*Math.max(0,t.cal-1.05*b.cal)/b.cal-1.0*Math.max(0,0.8*b.cal-t.cal)/b.cal+0.01*Math.min(t.fi,12);
+  else s=-1.5*shortP-3*Math.max(0,0.9*b.cal-t.cal)/b.cal-1.0*Math.max(0,t.cal-1.3*b.cal)/b.cal;
+  if(t.p>b.p*1.6)s-=(t.p-b.p*1.6)/b.p;
+  if(b.c&&mode!=='cut')s-=0.8*Math.max(0,0.7*b.c-t.c)/b.c;
+  if(t.sug>30)s-=(t.sug-30)/60;
+  if(mode!=='bulk'&&t.cal>0)s-=3*Math.max(0,t.f*9/t.cal-0.38);
+  s-=0.5*Math.max(0,t.na-b.cal*1.1)/b.cal;if(t.na>2300)s-=0.5;
+  return s;
+}
+var PROC=/sausage|bratwurst|\bbrat\b|hot ?dog|chili dog|frank|bacon|\bham\b|pepperoni|salami|bologna|kielbasa|chorizo|corn dog|pastrami|spam\b|deli meat|cold cut|andouille/i;
+var DESSERT=/sorbe?r?t\b|sorbert|gelato|frozen yogurt|froyo|cookie|brownie|cake|\bpie\b|\bbars?\b|donut|doughnut|muffin|pudding|ice cream|s'mores|sweet roll|chocolate|cinnamon roll|sticky bun|candy|cobbler|crisp\b|danish|pastry|scone|churro|cupcake|cheesecake|blondie|parfait/i;
+var STARCH=/bulgur|pilaf|rice|pasta|potato|fries|bread|\broll\b|tortilla|quinoa|noodle|grain|oat|bagel|toast|pancake|waffle|biscuit|couscous|polenta|pita|naan|\bcorn\b|macaroni|\bmac\b|orzo|farro|tots|hash brown|cereal|grits/i;
+var VEG=/broccoli|salad|greens|cauliflower|sprout|carrot|green bean|spinach|zucchini|squash|asparagus|pepper|tomato|cucumber|kale|cabbage|slaw|vegetable|veggie|\bbeans?\b|lentil|fruit|apple|banana|berr|melon|cantaloupe|grape|orange|pineapple|\bpeas\b|edamame|mushroom|eggplant|okra|chickpea|medley|stir.?fry vegetables/i;
+var HANDHELD=/sandwich|burger|\bsub\b|wrap|panini|melt|hoagie|quesadilla|burrito|hot dog|taco|\bdog\b/i;
+function normName(n){var l=n.toLowerCase(),c=/\btofu\b/.test(l)?'tofu':/\beggs?\b/.test(l)&&!/eggplant|egg roll|egg noodle/.test(l)?'egg':/cottage cheese/.test(l)?'cottage':/yogurt/.test(l)?'yogurt':/edamame/.test(l)?'edamame':/chick ?peas?|garbanzo/.test(l)?'chickpea':'';if(c)return c;n=l.replace(/[^a-z]/g,'');return n.replace(/s$/,'')}
+var LEGUME=/\b(beans?|lentils?|chickpeas?|chick peas|garbanzo|edamame|tofu|tempeh|dal|dhal)\b/i;
+function kind(it){
+  if(it._kind)return it._kind;
+  var k,cs=it.cal?it.c*4/it.cal:0;
+  if(DESSERT.test(it.name)||(it.sug>=20&&it.p<8))k='treat';
+  else if(/pizza|flatbread/i.test(it.name))k='pizza';
+  else if(it.p>=14||(it.p>=8&&pd(it)>=0.3)||(HANDHELD.test(it.name)&&it.p>=8))k='protein';
+  else if(LEGUME.test(it.name))k='legume';
+  else if(VEG.test(it.name)&&it.cal<=250&&!/potato|fries|mashed|cheese|jelly|\bjam\b|preserves|marmalade|sorbe|seasoning|spice|sauce|dressing|salsa|pickle|tuna|egg salad|chicken|shrimp|beef|pork|turkey|ham\b|fish|salmon|pasta|macaroni|rice|wheat berr|bulgur|pilaf|quinoa|couscous|noodle|orzo/i.test(it.name)&&!it.cereal&&!it.cond&&it.f<=8)k='veg';
+  else if(it.cereal)k='starch';
+  else if(/kimchi|pickle|onion|pepper|slaw|sauerkraut/i.test(it.name)&&it.cal<=120)k='other';
+  else if(STARCH.test(it.name)||/potato|fries/i.test(it.name))k='starch';
+  else if(it.cal<=120&&it.fi>=1.5)k='veg';
+  else if(cs>0.55)k='starch';
+  else k='other';
+  it._kind=k;return k;
+}
+var TOPN=/oreo|crumble|maraschino|cherries|dried cranberr|craisins|caramelized onion|cream cheese|sprinkles|whipped|croutons|bacon bits|marshmallow|chocolate chips|raisins/i;
+function suggest(items,b,mode,seed,opts){
+  opts=opts||{};var fav=opts.fav||{},nope=opts.nope||{},breakfast=!!opts.breakfast;
+  var by={protein:[],legume:[],starch:[],veg:[],pizza:[],treat:[],other:[]},seenN={};
+  items.forEach(function(it){
+    if(!it.ok||it.partial||it.check||it.bev||it.cond||TOPN.test(it.name)||it.cal<25||nope[it.key])return;
+    if(it.cereal&&!breakfast)return;
+    if(it.allday&&!(kind(it)==='veg'||kind(it)==='legume'||(kind(it)==='protein'&&!it.cereal)))return;
+    var k=kind(it);if(k!=='veg'&&k!=='legume'&&rate(it,mode,opts.prof).v==='skip')return;
+    var nn=normName(it.name)+'|'+k;if(seenN[nn]&&!it.salad)return;seenN[nn]=1;
+    by[k].push(it);
+  });
+  var prot=by.protein.length?by.protein:by.legume.concat(by.other,by.pizza).filter(function(it){return it.p>=6});
+  if(!prot.length&&!by.starch.length&&!by.veg.length&&!by.legume.length)return[];
+  var rnd=mulberry(seed||7),all={},maxItems=mode==='bulk'?6:5;
+  function pick(a){return a.length?a[Math.floor(rnd()*a.length)]:null}
+  for(var n=0;n<5000;n++){
+    var plate=[],used={};
+    var add=function(it,q){if(!it||used[it.key])return;used[it.key]=1;plate.push({item:it,q:q})};
+    var m=pick(prot);if(m){var mq=(m.cal<=350&&(mode==='bulk'||kind(m)!=='pizza')&&rnd()<0.45)?2:1;add(m,mq)}
+    if(by.starch.length&&(mode==='bulk'||rnd()<(mode==='cut'?0.45:0.75)))add(pick(by.starch),(mode==='bulk'&&rnd()<0.4)?2:1);
+    if(by.legume.length&&rnd()<(mode==='cut'?0.5:0.6))add(pick(by.legume),rnd()<(mode==='cut'?0.3:0.55)?2:1);
+    var nv=by.veg.length?(rnd()<0.65?1:2):0;for(var j=0;j<nv;j++)add(pick(by.veg),(mode==='cut'&&rnd()<0.3)?2:1);
+    var r=rnd();
+    if(mode==='bulk'&&r<0.55)add(pick(by.protein.concat(by.pizza,by.other)),1);
+    else if(mode==='protein'&&r<0.35)add(pick(by.protein.concat(by.legume)),1);
+    else if(mode!=='cut'&&r<(mode==='balanced'?0:0.45)&&by.treat.length)add(pick(by.treat),1);
+    else if(r<0.25)add(pick(by.other),1);
+    var fill=by.other.concat(by.pizza,by.starch,by.legume,by.protein);
+    for(var f=0;f<3&&fill.length&&totals(plate).cal<b.cal*0.75;f++){var fx=pick(fill);if(used[fx.key]){var ex=plate.filter(function(e){return e.item.key===fx.key})[0];if(ex&&ex.q<2&&fx.cal<=400)ex.q++}else add(fx,1)}
+    if(!plate.length||plate.length>maxItems)continue;
+    var cnt=function(f){return plate.filter(function(e){return f(e.item)}).length};
+    if(cnt(function(it){return kind(it)==='pizza'})>1||cnt(function(it){return kind(it)==='treat'})>1||cnt(function(it){return HANDHELD.test(it.name)})>1||cnt(function(it){return kind(it)==='starch'})>1)continue;
+    if(cnt(function(it){return it.salad&&(kind(it)==='protein'||kind(it)==='legume')})>1)continue;
+    var nm={},dup=false;plate.forEach(function(e){var x=normName(e.item.name);if(nm[x])dup=true;nm[x]=1});if(dup)continue;
+    if(plate.filter(function(e){return kind(e.item)==='protein'}).length>2)continue;var tt0=totals(plate);if(tt0.cal<b.cal*0.5||tt0.p<b.p*0.4)continue;if(mode==='cut'&&tt0.cal>b.cal*1.35)continue;if(plate.some(function(e){return e.q>1&&e.item.cal*e.q>b.cal*0.5}))continue;
+    var t=totals(plate),sc=scorePlate(t,b,mode)+0.08*cnt(function(it){return fav[it.key]})+(cnt(function(it){return kind(it)==='veg'})?0.1:0)-0.04*cnt(function(it){return it.salad});
+    if(t.na>1200)sc-=(t.na-1200)/(opts.lowNa?1200:4000);
+    var sig=plate.map(function(e){return e.item.key+'*'+e.q}).sort().join('~');
+    if(!all[sig])all[sig]={items:plate,score:sc,main:m?m.key:''};
+  }
+  var ranked=Object.keys(all).map(function(k){return all[k]}).sort(function(a,b){return b.score-a.score}),res=[],mains={};
+  function keys(p){return p.items.map(function(e){return e.item.key})}
+  function ok(c){var ck=keys(c);return res.every(function(r){var rk=keys(r),sh=ck.filter(function(k){return rk.indexOf(k)>=0}).length;return sh/Math.max(ck.length,rk.length)<=0.5})}
+  for(var i=0;i<ranked.length&&res.length<6;i++){if(!mains[ranked[i].main]&&ok(ranked[i])){res.push(ranked[i]);mains[ranked[i].main]=1}}
+  for(i=0;i<ranked.length&&res.length<6;i++){if(res.indexOf(ranked[i])<0&&ok(ranked[i]))res.push(ranked[i])}
+  return res;
+}
+function verdict(t,b,mode){
+  if(!t.cal)return{tone:'warn',text:'Add something to start.'};
+  var dp=r0(b.p-t.p),dc=r0(t.cal-b.cal),parts=[];
+  if(dp>5)parts.push(dp+' g short on protein');
+  if(mode==='cut'&&dc>b.cal*0.05)parts.push(dc+' cal over your meal budget');
+  if(mode!=='cut'&&dc>b.cal*0.1)parts.push(dc+' cal over your meal budget');
+  if(mode==='bulk'&&dc<-b.cal*0.1)parts.push(-dc+' cal under your meal budget');
+  if((mode==='protein'||mode==='balanced')&&dc<-b.cal*0.3)parts.push(-dc+' cal under, so add a side if you’re still hungry');
+  if(mode==='balanced'&&t.cal>=300&&t.fi<t.cal/1000*10)parts.push('light on fiber, so add a veggie, fruit or beans');
+  if(t.na>=1800)parts.push(r0(t.na).toLocaleString()+' mg sodium, most of a day\u2019s 2,300 mg limit');
+  if(t.p>b.p*1.6&&t.p-b.p>=20)parts.push(r0(t.p)+' g protein is more than this meal needs, so swap a main for a veggie or grain');
+  if(mode!=='bulk'&&t.cal>=300&&t.f*9/t.cal>0.45)parts.push('high in fat ('+r0(t.f*9/t.cal*100)+'% of calories)');
+  if(!parts.length)return{tone:'ok',text:'On target for this meal.'};
+  return{tone:'warn',text:parts.join(' · ')};
+}
+function stationsOf(data,site,loc,period){
+  var ps=(loc.menu||[]).filter(function(x){return x.period===period});
+  var out=[];
+  ps.forEach(function(p){p.stations.forEach(function(st){
+    var seen={};
+    out.push({name:String(st.name||'').replace(/\s*\([^)]*DO NOT[^)]*\)/i,'').trim()||'Station',items:st.items.map(function(i){return normItem(data,site,i)}).filter(function(it){if(seen[it.key])return false;seen[it.key]=1;return true})});
+  })});
+  return out;
+}
+var WINDOWS={breakfast:[6.5,10.5],lunch:[10.5,16],dinner:[16,21.5]};
+function pickPeriod(periods,now){
+  if(!periods.length)return'';
+  now=now||new Date();var h=now.getHours()+now.getMinutes()/60;
+  var order=h<10.5?['breakfast','lunch','dinner']:h<16?['lunch','dinner','breakfast']:h<21.5?['dinner','lunch','breakfast']:['late','dinner','lunch','breakfast'];
+  for(var i=0;i<order.length;i++){var hit=periods.filter(function(p){return order[i]==='late'?/late/i.test(p):mealKey(p)===order[i]})[0];if(hit)return hit}
+  return periods[0];
+}
+var TZ={AL:'America/Chicago',AK:'America/Anchorage',AZ:'America/Phoenix',AR:'America/Chicago',CA:'America/Los_Angeles',CO:'America/Denver',CT:'America/New_York',DE:'America/New_York',DC:'America/New_York',FL:'America/New_York',GA:'America/New_York',HI:'Pacific/Honolulu',ID:'America/Boise',IL:'America/Chicago',IN:'America/Indiana/Indianapolis',IA:'America/Chicago',KS:'America/Chicago',KY:'America/New_York',LA:'America/Chicago',ME:'America/New_York',MD:'America/New_York',MA:'America/New_York',MI:'America/Detroit',MN:'America/Chicago',MS:'America/Chicago',MO:'America/Chicago',MT:'America/Denver',NE:'America/Chicago',NV:'America/Los_Angeles',NH:'America/New_York',NJ:'America/New_York',NM:'America/Denver',NY:'America/New_York',NC:'America/New_York',ND:'America/Chicago',OH:'America/New_York',OK:'America/Chicago',OR:'America/Los_Angeles',PA:'America/New_York',RI:'America/New_York',SC:'America/New_York',SD:'America/Chicago',TN:'America/Chicago',TX:'America/Chicago',UT:'America/Denver',VT:'America/New_York',VA:'America/New_York',WA:'America/Los_Angeles',WV:'America/New_York',WI:'America/Chicago',WY:'America/Denver',PR:'America/Puerto_Rico'};
+var STN={'alabama':'AL','alaska':'AK','arizona':'AZ','arkansas':'AR','california':'CA','colorado':'CO','connecticut':'CT','delaware':'DE','district of columbia':'DC','florida':'FL','georgia':'GA','hawaii':'HI','idaho':'ID','illinois':'IL','indiana':'IN','iowa':'IA','kansas':'KS','kentucky':'KY','louisiana':'LA','maine':'ME','maryland':'MD','massachusetts':'MA','michigan':'MI','minnesota':'MN','mississippi':'MS','missouri':'MO','montana':'MT','nebraska':'NE','nevada':'NV','new hampshire':'NH','new jersey':'NJ','new mexico':'NM','new york':'NY','north carolina':'NC','north dakota':'ND','ohio':'OH','oklahoma':'OK','oregon':'OR','pennsylvania':'PA','rhode island':'RI','south carolina':'SC','south dakota':'SD','tennessee':'TN','texas':'TX','utah':'UT','vermont':'VT','virginia':'VA','washington':'WA','west virginia':'WV','wisconsin':'WI','wyoming':'WY'};
+function tzDirect(loc){var a=loc.address||'';if(/moscow|lewiston|coeur d|sandpoint/i.test(a)&&/\bID\b|idaho/i.test(a))return 'America/Los_Angeles';var m=/,\s*([A-Z]{2})\b[,\s]*\d{5}/.exec(a)||/\b([A-Z]{2})\s*,?\s*\d{5}/.exec(a)||/,\s*([A-Z]{2})\s*$/.exec(a);if(m&&TZ[m[1]])return TZ[m[1]];
+  var low=a.toLowerCase(),best=null;Object.keys(STN).forEach(function(n){var i=low.lastIndexOf(n);if(i>=0&&(!best||i>best.i||n.length>best.n.length&&i===best.i))best={i:i,n:n}});
+  if(best&&!(best.n==='virginia'&&/west virginia/.test(low))&&!(best.n==='washington'&&/district of columbia|, dc\b|washington,\s*d\.?c/i.test(a)))return TZ[STN[best.n]]||null;
+  if(/washington,?\s*d\.?c|district of columbia/i.test(a))return TZ.DC;return null}
+function tzOf(loc){if(!loc)return null;if(loc._tz!==undefined)return loc._tz;var tz=tzDirect(loc);
+  if(!tz&&typeof DATA!=='undefined'&&DATA&&DATA.sites){var site=DATA.sites.filter(function(s){return s.locations.indexOf(loc)>=0})[0];if(site)for(var i=0;i<site.locations.length&&!tz;i++){if(site.locations[i]!==loc)tz=tzDirect(site.locations[i])}}
+  loc._tz=tz||null;return loc._tz}
+function campusNow(loc){
+  var tz=tzOf(loc),d=new Date();if(!tz)return d;
+  try{var p={};new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d).forEach(function(x){p[x.type]=x.value});
+    return new Date(+p.year,+p.month-1,+p.day,+p.hour%24,+p.minute)}catch(e){return d}
+}
+var ALLDAY=/every ?day|all ?day|daily|anytime|salad bar|deli bar|\bnook\b|pantry|condiment|beverage|grab ?n ?go|grab and go/i;
+/*UI*/
+/* ============ UI ============ */
+var LS='pmc.v1',DB='pmc-data';
+var DEFAULT_PROF={goal:'balanced',sex:'m',age:19,lb:165,ft:5,inch:10,act:'mod',diet:'none',avoid:[],calO:0,pO:0};
+var S={tab:'menu',step:0,prof:null,sel:{slug:'UMN',locId:''},period:'',plate:[],saved:[],q:'',showAll:false,open:{},variants:[],vi:0,pal:'graphite',help:true,boost:'',log:{},fav:{},nope:{},custom:[],train:{},wf:{type:'lift',int:1},helpSeen:false,splate:null,psub:'plate',ysub:'profile',stOpen:{},tipDone:false,ui:{dens:'comfy',head:'clean',list:'cards',macro:'bar',verdict:'stripe',salad:true},uiv:2,arm:'',src:'sample',picker:{slug:'UMN',q:''},done:false,msg:''};
+var DATA=null;
+
+function load(){try{var j=JSON.parse(localStorage.getItem(LS)||'null');if(j){S.prof=j.prof;S.sel=j.sel||S.sel;S.saved=j.saved||[];S.done=!!j.done;if(j.pal)S.pal=j.pal;if(j.help===false)S.help=false;S.log=j.log||{};S.fav=j.fav||{};S.nope=j.nope||{};S.custom=j.custom||[];S.train=j.train||{};S.helpSeen=!!j.helpSeen;S.tipDone=!!j.tipDone;if(j.ui&&j.uiv===2)for(var uk in j.ui)S.ui[uk]=j.ui[uk];else if(j.ui)S.ui.salad=j.ui.salad!==false;S.splate=j.plate||null;S.plates=j.plates||{};if(j.period&&j.periodManual&&Date.now()-j.periodManual<45*60000){S.period=j.period;S.periodManual=j.periodManual}}}catch(e){}
+  if(!S.prof)S.prof=JSON.parse(JSON.stringify(DEFAULT_PROF));applyPal();}
+function applyPal(){try{var r=document.documentElement;r.setAttribute('data-pal',S.pal);['dens','head','list','macro','verdict'].forEach(function(k){r.setAttribute('data-'+k,S.ui[k])})}catch(e){}}
+function pruneLog(l){var keep={},cut=new Date();cut.setDate(cut.getDate()-60);var ck=dateKey(cut);Object.keys(l||{}).forEach(function(k){if(k>=ck)keep[k]=l[k]});return keep}
+function plansOf(p){
+  if(p.plans)return p.plans;
+  if(p.days&&p.days.length)return[{type:p.defType||'lift',min:p.defMin||60,int:1,days:p.days.slice()}];
+  return[];
+}
+function plannedFor(p,wd){return plansOf(p).filter(function(x){return x.days.indexOf(wd)>=0}).map(function(x){return{type:x.type,min:x.min,int:x.int,planned:true}})}
+function trainToday(d){
+  var day=d||new Date(),k=dateKey(day),list=(S.train&&S.train[k])||[],kg=S.prof.lb*0.45359237;
+  var sessions=list.slice();
+  if(S.prof.trainOn){var logged={};list.forEach(function(w){logged[w.type]=1});plannedFor(S.prof,day.getDay()).forEach(function(w){if(!logged[w.type])sessions.push(w)})}
+  return{kcal:sessions.reduce(function(a,w){return a+workoutKcal(w,kg)},0),sessions:sessions,planned:sessions.some(function(w){return w.planned}),dayType:dayTypeOf(sessions)};
+}
+function weekCal(p){var tot=0,on=0;for(var wd=0;wd<7;wd++){var ss=plannedFor(p,wd),kg=p.lb*0.45359237;on+=targets(p,{kcal:ss.reduce(function(a,w){return a+workoutKcal(w,kg)},0),dayType:dayTypeOf(ss)}).cal}
+  var off=targets(Object.assign({},p,{trainOn:false})).cal*7;return{on:on,off:off}}
+function todayLog(){return S.log[dateKey()]||[]}
+function mealBudget(){return adaptBudget(S.prof,S.period,todayLog(),campusNow(curLoc()))}
+function fmtQ(q){return q===0.5?'\u00bd':String(q)}
+function toast(t){document.querySelectorAll('.toast').forEach(function(x){x.remove()});var el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=t;document.body.appendChild(el);setTimeout(function(){el.remove()},1800)}
+function save(){try{localStorage.setItem(LS,JSON.stringify({prof:S.prof,sel:S.sel,saved:S.saved,done:S.done,pal:S.pal,help:S.help,log:pruneLog(S.log),fav:S.fav,nope:S.nope,custom:S.custom,train:pruneLog(S.train),helpSeen:S.helpSeen,tipDone:S.tipDone,ui:S.ui,uiv:2,period:S.period,periodManual:S.periodManual||0,plates:S.plates||{},plate:S.plate.map(function(e){var o={n:e.item.name,port:e.item.portion,q:e.q};if(e.item.salad)o.sb=1;if(e.item.extra){o.x=[e.item.cal,e.item.p,e.item.c,e.item.f,e.item.fi];o.cu=e.item.custom}return o})}))}catch(e){}}
+function idbGet(){return new Promise(function(res){try{var rq=indexedDB.open(DB,1);rq.onupgradeneeded=function(){rq.result.createObjectStore('d')};rq.onerror=function(){res(null)};
+  rq.onsuccess=function(){try{var g=rq.result.transaction('d').objectStore('d').get('data');g.onsuccess=function(){res(g.result||null)};g.onerror=function(){res(null)}}catch(e){res(null)}}}catch(e){res(null)}})}
+function idbPut(v){return new Promise(function(res){try{var rq=indexedDB.open(DB,1);rq.onupgradeneeded=function(){rq.result.createObjectStore('d')};rq.onerror=function(){res(false)};
+  rq.onsuccess=function(){try{var tx=rq.result.transaction('d','readwrite');tx.objectStore('d').put(v,'data');tx.oncomplete=function(){res(true)};tx.onerror=function(){res(false)}}catch(e){res(false)}}}catch(e){res(false)}})}
+function idbDel(){return new Promise(function(res){try{var rq=indexedDB.open(DB,1);rq.onupgradeneeded=function(){rq.result.createObjectStore('d')};rq.onerror=function(){res()};
+  rq.onsuccess=function(){try{var tx=rq.result.transaction('d','readwrite');tx.objectStore('d').delete('data');tx.oncomplete=function(){res()};tx.onerror=function(){res()}}catch(e){res()}}}catch(e){res()}})}
+
+function sitesWithMenus(){return DATA.sites.filter(function(s){return s.locations.some(function(l){return l.menu&&l.menu.length})}).sort(function(a,b){return a.name.localeCompare(b.name)})}
+function curSite(){return DATA.bySlug[S.sel.slug]||DATA.sites[0]}
+function hallsOf(site){return site.locations.filter(function(l){return l.menu&&l.menu.length})}
+function curLoc(){
+  var site=curSite(),halls=hallsOf(site);
+  var l=halls.filter(function(x){return x.id===S.sel.locId})[0];
+  if(!l){
+    l=halls.filter(function(x){return x.menu.length>=2}).sort(function(a,b){return b.menu.reduce(function(n,p){return n+p.stations.length},0)-a.menu.reduce(function(n,p){return n+p.stations.length},0)})[0]||halls[0];
+    if(l)S.sel.locId=l.id;
+  }
+  return l;
+}
+function rawPeriods(loc){return loc?loc.menu.map(function(p){return p.period}).filter(function(p,i,a){return a.indexOf(p)===i}):[]}
+function periodsOf(loc){var ps=rawPeriods(loc),meals=ps.filter(function(p){return mealKey(p)||/late/i.test(p)});return meals.length>=1&&ps.length>meals.length?ps.filter(function(p){return !ALLDAY.test(p)||mealKey(p)}):ps}
+function alldayOf(loc){var ps=rawPeriods(loc);return periodsOf(loc).length<ps.length?ps.filter(function(p){return periodsOf(loc).indexOf(p)<0}):[]}
+function mealStations(site,loc,period){
+  var st=stationsOf(DATA,site,loc,period);
+  var have={};st.forEach(function(x){have[x.name.toLowerCase()]=1});
+  alldayOf(loc).forEach(function(ap){stationsOf(DATA,site,loc,ap).forEach(function(x){var same=st.filter(function(y){return y.name.toLowerCase()===x.name.toLowerCase()})[0];if(same){var ks={};same.items.forEach(function(i){ks[i.key]=1});x.items.forEach(function(i){if(!ks[i.key]){same.items.push(i);ks[i.key]=1}});return}x.allday=true;x.name=x.name+' (all day)';st.push(x)})});
+  return st;
+}
+function ensurePeriod(){var loc=curLoc(),ps=periodsOf(loc);if(ps.indexOf(S.period)<0)S.period=pickPeriod(ps,campusNow(loc))}
+function curItems(){
+  var site=curSite(),loc=curLoc();if(!loc)return{st:[],all:[]};
+  ensurePeriod();
+  var st=mealStations(site,loc,S.period),all=[],seen={};
+  st.forEach(function(s){s.items.forEach(function(it){if(seen[it.key])return;seen[it.key]=1;if(s.allday)it.allday=true;all.push(it)})});
+  return{st:st,all:all};
+}
+function realHall(loc){
+  if(!loc)return false;var ms=periodsOf(loc).filter(function(p){return mealKey(p)});
+  if(ms.length<2||/market|store|shop|c-store|pantry|grab|kosher|grill|pub|burger|pizza|wrap|sushi|taco|express|bistro|subway|starbucks|panda|chick|deli\b|bagel|coffee|caf[eé] ?bar/i.test(loc.name))return false;
+  return true;
+}
+function hasRealSalad(site,loc,period){return mealStations(site,loc,period).some(function(st){return /salad|cold bar|greens bar|fresh 52|freshworks|chop'?d|roots|market fresh|garden|produce|leaf|greens/i.test(st.name)||st.items.filter(function(it){return /lettuce|spring mix|romaine|mixed greens|spinach leaves|baby spinach|arugula/i.test(it.name)}).length>=2})}
+function saladPool(loc,period){
+  period=period||S.period;
+  if(!S.ui.salad||!realHall(loc)||mealKey(period)==='breakfast'||!mealKey(period))return[];
+  if(hasRealSalad(curSite(),loc,period))return[];
+  if(mealStations(curSite(),loc,period).reduce(function(n,st){return n+st.items.length},0)<12)return[];
+  return SALAD_ITEMS.filter(function(it){return allowed(it,S.prof)});
+}
+function tagRate(loc){
+  if(loc._tr!==undefined)return loc._tr;var site=curSite(),n=0,t=0;
+  (loc.menu||[]).forEach(function(p){p.stations.forEach(function(st){st.items.forEach(function(i){var it=normItem(DATA,site,i);n++;if(it.tags.length)t++})})});
+  loc._tr=n?t/n:1;return loc._tr;
+}
+function inPlate(key){var e=S.plate.filter(function(x){return x.item.key===key})[0];return e?e.q:0}
+function plateCount(){return S.plate.length}
+function plateKey(){return S.sel.slug+'|'+S.sel.locId+'|'+S.period}
+function serPlate(pl){return pl.map(function(e){var o={n:e.item.name,port:e.item.portion,q:e.q};if(e.item.salad)o.sb=1;if(e.item.extra){o.x=[e.item.cal,e.item.p,e.item.c,e.item.f,e.item.fi];o.cu=e.item.custom}return o})}
+function stashPlate(){S.plates=S.plates||{};var k=plateKey();if(S.plate.length)S.plates[k]={ser:serPlate(S.plate),t:Date.now()};else delete S.plates[k]}
+function unstashPlate(){S.plates=S.plates||{};var k=plateKey(),pl=S.plates[k];S.plate=[];if(pl&&pl.ser&&Date.now()-pl.t<16*3600000){var by={};curItems().all.forEach(function(it){by[it.key]=it});pl.ser.forEach(function(x){var it=resolveSaved(x,by);if(it&&allowed(it,S.prof))S.plate.push({item:it,q:x.q})})}delete S.plates[k]}
+
+function dataNote(){
+  var md=normDate(DATA.menuDate),today=dateKey();
+  var gen=DATA.generated?new Date(DATA.generated):null;
+  var when=gen&&!isNaN(gen)?gen.toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+  return{stale:md&&md!==today,md:md,when:when};
+}
+function fmtDay(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'})}
+
+/* ---------- views ---------- */
+function goalCards(){
+  return '<div class="goals">'+Object.keys(MODES).map(function(k){
+    return '<button class="goal" data-act="goal" data-v="'+k+'" aria-pressed="'+(S.prof.goal===k)+'"><b>'+MODES[k].name+'</b><span>'+MODES[k].blurb+'</span></button>'}).join('')+'</div>';
+}
+var UIOPT={
+  dens:['Spacing',[['comfy','Roomy'],['compact','Compact']]],
+  head:['Headings',[['signage','Signage'],['clean','Clean']]],
+  list:['Food list',[['list','List'],['cards','Cards']]],
+  macro:['Macros',[['text','Text'],['chips','Chips'],['bar','Bar']]],
+  verdict:['Ratings',[['pill','Label'],['stripe','Stripe'],['dot','Dot']]]
+};
+function layoutControls(){
+  return '<div class="stack" style="margin-top:0">'+Object.keys(UIOPT).map(function(k){var o=UIOPT[k];
+    return '<div><div class="eyebrow">'+o[0]+'</div><div class="seg" role="group" aria-label="'+o[0]+'">'+o[1].map(function(x){return '<button data-act="ui" data-k="'+k+'" data-v="'+x[0]+'" aria-pressed="'+(S.ui[k]===x[0])+'">'+x[1]+'</button>'}).join('')+'</div></div>'}).join('')+
+    '<div><div class="eyebrow">Colors</div>'+lookHTML()+'</div>'+
+    '<div class="actions" style="margin-top:0"><button class="btn solid" data-act="surprise">Surprise me</button><button class="btn" data-act="uireset">Back to default</button></div></div>';
+}
+function layoutSheet(){
+  var items=curItems().all.filter(function(it){return it.ok&&allowed(it,S.prof)}).slice(0,3);
+  return '<div class="wrap" role="dialog" aria-modal="true" aria-label="Layout"><div class="top"><h1>Layout lab</h1><button class="btn sm" data-act="closesheet">Done</button></div>'+
+    '<p class="lede">Try different looks. The preview below and the whole app update as you tap.</p>'+
+    '<div class="panel">'+layoutControls()+'</div>'+
+    '<div class="station"><h3>Preview<span>'+esc(S.period)+'</span></h3>'+items.map(function(it){return itemRow(it,S.prof.goal)}).join('')+'</div></div>';
+}
+function lookHTML(){
+  var P=[['graphite','Graphite','#8BB4FF'],['ember','Ember','#FF7A3D'],['violet','Violet','#A78BFA'],['paper','Paper','#F3F4F6']];
+  return '<div class="look">'+P.map(function(x){return '<button class="sw" data-act="pal" data-v="'+x[0]+'" aria-pressed="'+(S.pal===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>'}).join('')+'</div>';
+}
+function bodyFields(){
+  var p=S.prof;if(p.trainOn&&S.done){}
+  return '<div class="stack">'+
+   '<div><div class="eyebrow">Sex</div><div class="seg" role="group"><button data-act="set" data-k="sex" data-v="m" aria-pressed="'+(p.sex==='m')+'">Male</button><button data-act="set" data-k="sex" data-v="f" aria-pressed="'+(p.sex==='f')+'">Female</button></div></div>'+
+   '<div class="fields"><label class="tf">Age<input type="number" id="f-age" inputmode="numeric" min="13" max="99" value="'+p.age+'"></label>'+
+   '<label class="tf">Weight (lb)<input type="number" id="f-lb" inputmode="numeric" min="70" max="500" value="'+p.lb+'"></label>'+
+   '<label class="tf">Height (ft)<input type="number" id="f-ft" inputmode="numeric" min="4" max="7" value="'+p.ft+'"></label>'+
+   '<label class="tf">Height (in)<input type="number" id="f-in" inputmode="numeric" min="0" max="11" value="'+p.inch+'"></label></div>'+
+   '<div><div class="eyebrow">Activity</div><div class="seg col" role="group"><button data-act="set" data-k="act" data-v="sed" aria-pressed="'+(p.act==='sed')+'">Mostly sitting<br><small>little or no exercise</small></button><button data-act="set" data-k="act" data-v="light" aria-pressed="'+(p.act==='light')+'">Lightly active<br><small>1\u20133 h of exercise a week</small></button><button data-act="set" data-k="act" data-v="mod" aria-pressed="'+(p.act==='mod')+'">Active<br><small>3\u20135 h a week</small></button><button data-act="set" data-k="act" data-v="heavy" aria-pressed="'+(p.act==='heavy')+'">Very active<br><small>6+ h a week or a team sport</small></button></div></div>'+
+   '<div class="big" id="tgt-live">'+tgtHTML()+'</div>'+safetyNote(p,dayTargets(p))+'</div>';
+}
+function safetyNote(p,d){
+  var t=d.t,out=[];
+  if(t.cutBlocked)out.push(p.age<18?'Because you\u2019re under 18, Lose fat keeps you at maintenance calories with high protein. Growing bodies need the energy. Talk to a doctor or dietitian before cutting.':'Your BMI is under 18.5, so Lose fat keeps you at maintenance calories with high protein. Talk to a doctor or dietitian before trying to lose weight.');
+  if(t.floorRaised)out.push('We kept your target at '+d.cal.toLocaleString()+' cal, the lowest we\u2019ll suggest without a professional involved.');
+  if(p.calO&&p.calO<(p.sex==='f'?1500:1800))out.push('Your custom target is very low. Please set it with a doctor or registered dietitian.');
+  if(p.age<18&&!t.cutBlocked)out.push('Under 18, these are rough estimates. Growth changes your needs, so check with a doctor.');
+  return '<div class="safe-live">'+(out.length?'<div class="safe">'+out.map(function(x){return '<p>'+esc(x)+'</p>'}).join('')+'</div>':'')+'</div>';
+}
+function supportNote(){return '<p class="hint support">If food, eating or weight feels stressful, pick Eat well and focus on the food, not the numbers. Talking to someone helps: Boynton Mental Health 612-624-1444, or the National Alliance for Eating Disorders helpline 1-866-662-1235 (weekdays).</p>'}
+function tgtHTML(){var d=dayTargets(S.prof);return '<div><div class="n">'+d.cal.toLocaleString()+'</div><div class="l">kcal per day</div></div><div><div class="n">'+d.p+' g</div><div class="l">protein per day</div></div>'}
+function foodFields(){
+  var p=S.prof;
+  var imp=DIETS[p.diet||'none']||[];
+  function chips(g){return AL.filter(function(a){return a.grp===g}).map(function(a){var on=imp.indexOf(a.k)>=0;return '<button class="chip" data-act="avoid" data-v="'+a.k+'" aria-pressed="'+(on||p.avoid.indexOf(a.k)>=0)+'"'+(on?' disabled title="Included in '+DIETNAME[p.diet]+'"':'')+'>'+a.label+'</button>'}).join('')}
+  return '<div class="stack"><div><div class="eyebrow">Eating style</div><div class="seg diet" role="group">'+
+   ['none','pesc','vegetarian','vegan'].map(function(k){return '<button data-act="set" data-k="diet" data-v="'+k+'" aria-pressed="'+((p.diet||'none')===k)+'" style="font-size:.8rem;padding:0 6px">'+DIETNAME[k]+'</button>'}).join('')+'</div>'+
+   '<p class="hint">Pescatarian skips pork, beef and chicken or turkey. Vegetarian also skips fish and shellfish. Vegan only shows foods labeled vegan.</p></div>'+
+   '<div><div class="eyebrow">Skip these meats</div><div class="chips">'+chips('meat')+'</div></div>'+
+   '<div><div class="eyebrow">Health</div><div class="chips"><button class="chip" data-act="lowna" aria-pressed="'+(!!p.lowNa)+'">Watch sodium</button></div><p class="hint">Flags foods over 800 mg of sodium, rates them lower and keeps built plates lighter on salt.</p></div>'+
+   '<div><div class="eyebrow">Avoid these allergens</div><div class="chips">'+chips('allergen')+'</div>'+
+   '<p class="hint">We match the dining hall\u2019s allergen tags plus each food\u2019s name, description and ingredient list. Any of these can be incomplete, so always check with dining staff if it matters.</p>'+
+   '<div class="seg col" style="margin-top:10px" role="group" aria-label="May contain"><button data-act="mayok" data-v="0" aria-pressed="'+(!p.mayOk)+'">Safest: also hide \u201cmay contain\u201d</button><button data-act="mayok" data-v="1" aria-pressed="'+(!!p.mayOk)+'">Only hide \u201ccontains\u201d</button></div>'+
+   (AL.some(function(a){return isAllergy(a)&&p.avoid.indexOf(a.k)>=0})?'<div class="actions"><button class="btn sm" data-act="acard">Show my allergy card</button></div>':'')+'</div></div>';
+}
+function pickerHTML(){
+  var sites=sitesWithMenus(),q=S.picker.q.toLowerCase(),shown=sites.filter(function(s){return !q||s.name.toLowerCase().indexOf(q)>=0||s.slug.toLowerCase().indexOf(q)>=0}).slice(0,40);
+  var cur=DATA.bySlug[S.picker.slug]||sites[0];
+  var h='';
+  if(sites.length>1)h+='<label class="tf">Find your campus<input type="search" id="f-campus" placeholder="Type a school name" value="'+esc(S.picker.q)+'" autocomplete="off"></label>';
+  h+=shown.map(function(s){return '<button class="pick" data-act="campus" data-v="'+esc(s.slug)+'" aria-pressed="'+(s.slug===S.picker.slug)+'"><b>'+esc(s.name)+'</b><span>'+hallsOf(s).length+' places</span></button>'}).join('');
+  if(sites.length>40&&!q)h+='<p class="hint">Showing 40 of '+sites.length+'. Type to search.</p>';
+  if(cur){
+    h+='<div class="eyebrow" style="margin-top:20px">Dining places at '+esc(cur.name)+'</div>';
+    var halls=hallsOf(cur).sort(function(a,b){var an=a.menu.length>1?0:1,bn=b.menu.length>1?0:1;return an-bn||a.name.localeCompare(b.name)});
+    var nameCount={};halls.forEach(function(l){nameCount[l.name]=(nameCount[l.name]||0)+1});
+    h+=halls.map(function(l){var n=l.menu.reduce(function(t,p){return t+p.stations.reduce(function(u,s){return u+s.items.length},0)},0);
+      var site2=cur,nn=0,tot=0;l.menu.forEach(function(p){p.stations.forEach(function(s2){s2.items.forEach(function(i){tot++;var it=normItem(DATA,site2,i);if(it.ok&&!it.partial)nn++})})});
+      return '<button class="pick" data-act="hall" data-v="'+esc(l.id)+'" aria-pressed="'+(l.id===S.sel.locId&&cur.slug===S.sel.slug)+'"><b>'+esc(l.name)+(nameCount[l.name]>1&&l.address?'<br><small class="mono" style="font-weight:400;color:var(--muted)">'+esc(String(l.address).split(',')[0])+'</small>':'')+'</b><span>'+periodsOf(l).map(function(p){return esc(p)}).join(' · ')+'<br>'+n+' items'+(tot&&nn/tot<0.3?'<br>no full nutrition':'')+'</span></button>'}).join('');
+  }
+  return h;
+}
+function dataLoader(){
+  if(LIVE)return '';
+  return '<details style="margin-top:14px"><summary class="link">Load a menu file (more campuses or a newer day)</summary><label class="drop">Load the all-campus menu file (.json)<input type="file" id="f-file" class="sr-only" accept=".json,application/json"></label><p class="hint" id="load-msg">'+esc(S.msg)+'</p></details>';
+}
+function introView(){
+  var steps=['Goal','Body','Food','Where'];
+  var bar='<div class="bar">'+steps.map(function(s,i){return '<i class="'+(i<=S.step?'on':'')+'"></i>'}).join('')+'</div>';
+  var body='',next='Next';
+  if(S.step===0)body='<div class="eyebrow">1 of 4</div><h1>What are you<br>eating for?</h1><p class="lede">Pick one. You can change it any time.</p>'+goalCards()+supportNote();
+  else if(S.step===1)body='<div class="eyebrow">2 of 4</div><h1>A few<br>numbers</h1><p class="lede">This sets your daily calories and protein. Estimates only. You can edit them later.</p><p class="hint" style="color:var(--warn)">These start as example numbers. Change them to yours for accurate targets.</p>'+bodyFields();
+  else if(S.step===2)body='<div class="eyebrow">3 of 4</div><h1>Any food<br>rules?</h1><p class="lede">We hide what you can’t or won’t eat.</p>'+foodFields();
+  else{body='<div class="eyebrow">4 of 4</div><h1>Where do<br>you eat?</h1><p class="lede">'+(LIVE?'Pick your usual dining hall. You can switch any time.':'Pick a campus and a dining place.')+'</p>'+(LIVE?'<p class="hint">'+esc(DISCLAIMER)+'</p>':'')+'<div style="margin-top:16px">'+pickerHTML()+'</div>'+(sitesWithMenus().length<2?dataLoader():'');next='Show me the menu'}
+  return '<div class="intro">'+bar+body+'<div class="actions">'+(S.step>0?'<button class="btn" data-act="back">Back</button>':'')+'<button class="btn solid" data-act="next"'+(S.step===3&&!S.sel.locId?' disabled':'')+'>'+(S.step===3&&!S.sel.locId?'Pick a place first':next)+'</button></div>'+(S.step===3?'<p class="hint">Plate Math gives general nutrition information, not medical advice. Always confirm allergens with dining staff. Your data stays on this device.</p>':'')+'</div>';
+}
+function budgetStrip(b){
+  var t=totals(S.plate),pc=Math.min(100,t.cal/b.cal*100),pp=Math.min(100,t.p/b.p*100),over=t.cal>b.cal*1.1;
+  var lc='Calories this meal',lp='Protein this meal';
+  return '<div class="budget"><div class="bcell"><div class="l">'+lc+'</div><div class="val">'+r0(t.cal).toLocaleString()+' <small>/ '+b.cal.toLocaleString()+'</small></div><div class="meter'+(over?' over':'')+'"><i style="width:'+pc+'%"></i></div></div>'+
+    '<div class="bcell"><div class="l">'+lp+'</div><div class="val">'+r0(t.p)+' <small>/ '+b.p+' g</small></div><div class="meter p"><i style="width:'+pp+'%"></i></div></div></div>'+
+    (b.snack?'<p class="hint">That\u2019s more than one meal should hold, so the other '+b.snack.toLocaleString()+' cal is for snacks or a later meal.</p>':'')+
+    (b.after?'<p class="hint">You already logged '+esc(S.period.toLowerCase())+' today. This is a normal-size plate from what\u2019s left: '+Math.max(0,b.leftCal).toLocaleString()+' cal and '+Math.max(0,b.leftP)+' g protein.</p>':b.adj?'<p class="hint">Adjusted for what you’ve logged today: '+Math.max(0,b.leftCal).toLocaleString()+' cal and '+Math.max(0,b.leftP)+' g protein left.</p>':'');
+}
+function fmtM(v){return v>=10?String(r0(v)):String(Math.round(v*10)/10)}
+function micGrid(it){
+  var any=MICROS.some(function(m){return it.mic[m.k]!=null});
+  if(!any)return '<p class="ing">Vitamins and minerals aren\u2019t listed for this food.</p>';
+  return '<div class="dt">Vitamins &amp; minerals</div><div class="mic">'+MICROS.map(function(m){
+    var v=it.mic[m.k],pc=v==null?null:v/m.dv*100;
+    return '<div class="mc"><div class="l">'+m.label+'</div><div class="n">'+(v==null?'\u2014':fmtM(v)+m.unit)+'</div><div class="d">'+(pc==null?'not listed':r0(pc)+'% daily')+'</div><div class="meter"><i style="width:'+Math.min(100,pc||0)+'%"></i></div></div>'}).join('')+'</div>';
+}
+function macroHTML(it){
+  if(!it.ok)return '<div class="sub">'+esc(it.portion)+' · no nutrition listed</div>';
+  var m=S.ui.macro,base='<div class="sub">'+esc(it.portion)+' · <b>'+r0(it.cal)+' cal</b>';
+  if(m==='chips')return base+'</div><div class="mchips"><span class="mc-p">'+r0(it.p)+'g protein</span><span class="mc-c">'+r0(it.c)+'g carbs</span><span class="mc-f">'+r0(it.f)+'g fat</span></div>';
+  if(m==='bar'){var tot=it.p*4+it.c*4+it.f*9||1,pp=it.p*4/tot*100,cp=it.c*4/tot*100,fp=100-pp-cp;
+    return base+'</div><div class="mbar" role="img" aria-label="'+r0(it.p)+' g protein, '+r0(it.c)+' g carbs, '+r0(it.f)+' g fat"><i class="bp" style="width:'+pp.toFixed(1)+'%"></i><i class="bc" style="width:'+cp.toFixed(1)+'%"></i><i class="bf" style="width:'+fp.toFixed(1)+'%"></i></div><div class="mleg"><span class="mc-p">'+r0(it.p)+'P</span><span class="mc-c">'+r0(it.c)+'C</span><span class="mc-f">'+r0(it.f)+'F</span></div>'}
+  return base+' · '+r0(it.p)+'P · '+r0(it.c)+'C · '+r0(it.f)+'F</div>';
+}
+function itemRow(it,mode){
+  var r=rate(it,mode),n=inPlate(it.key);
+  var det='<div class="actions" style="margin-top:4px"><button class="btn sm" data-act="fav">'+(S.fav[it.key]?'\u2605 Favorited':'\u2606 Favorite')+'</button><button class="btn sm" data-act="nope">'+(S.nope[it.key]?'Suggest it again':'Don\u2019t suggest')+'</button></div>';
+  if(it.check)det+='<div class="dt warnline">Numbers check</div><p>'+esc(it.checkWhy||'These numbers look off.')+'</p>';
+  if(it.ok){
+    det+='<div class="dt">'+r.label+' for '+MODES[mode].name+'</div><p>'+esc(r.reason)+'</p>';
+    var bn=benefitsOf(it);
+    det+='<div class="dt">What it does for you</div><p>'+esc(r.what)+'</p><ul class="facts">'+r.why.map(function(w){return '<li>'+esc(w)+'</li>'}).join('')+bn.map(function(b){return '<li><b>'+esc(b.label)+':</b> '+esc(b.txt)+'</li>'}).join('')+'</ul>';
+    det+='<div class="dt">The numbers</div><div class="nutri"><div><div class="l">Cal</div><div class="n">'+r0(it.cal)+'</div></div><div><div class="l">Protein</div><div class="n">'+r0(it.p)+'g</div></div><div><div class="l">Carbs</div><div class="n">'+r0(it.c)+'g</div></div><div><div class="l">Fat</div><div class="n">'+r0(it.f)+'g</div></div>'+
+      '<div><div class="l">Fiber</div><div class="n">'+r0(it.fi)+'g</div></div><div><div class="l">Sugar</div><div class="n">'+r0(it.sug)+'g</div></div><div><div class="l">Sat fat</div><div class="n">'+r0(it.sat)+'g</div></div><div><div class="l">Sodium</div><div class="n">'+r0(it.na)+'mg</div></div></div>'+micGrid(it);
+  }else det+='<p>'+esc(r.reason)+'</p>';
+  var alg=it.tags.filter(function(t){return AL.some(function(x){return x.re.test(t)})}),oth=it.tags.filter(function(t){return alg.indexOf(t)<0});
+  var kw=AL.filter(function(a){return it.groups[a.k]&&!alg.some(function(t){return a.re.test(t)})}).map(function(a){return a.label});
+  det+='<div class="dt">Contains</div><div>'+(alg.length?alg.map(function(t){return '<span class="tag al">'+esc(t.replace(/\*$/,''))+(/\*$/.test(t)?' (may contain)':'')+'</span>'}).join(''):(!it.salad&&!it.extra&&curLoc()&&tagRate(curLoc())<0.05?'<span class="tag al">This place doesn\u2019t publish allergens. Ask staff.</span>':'<span class="tag">No allergens labeled</span>'))+
+    (kw.length?'<p class="ing">From the name, description or ingredients we also think it has: '+esc(kw.join(', '))+'.</p>':'')+'</div>';
+  if(oth.length)det+='<div class="dt">Other labels</div><div>'+oth.map(function(t){return '<span class="tag">'+esc(t)+'</span>'}).join('')+'</div>';
+  if(it.desc)det+='<p class="ing">'+esc(it.desc)+'</p>';
+  if(it.ing)det+='<p class="ing">Ingredients: '+esc(it.ing.replace(/\^/g,''))+'</p>';
+  return '<div class="item r-'+r.v+(S.open[it.key]?' open':'')+'" data-key="'+esc(it.key)+'"><div class="row"><button class="main" data-act="toggle" aria-expanded="'+(!!S.open[it.key])+'"><span class="sr-only">'+esc(r.label)+': </span><div class="nm">'+(S.fav[it.key]?'<span class="star" aria-label="Favorite">\u2605</span>':'')+esc(it.name)+'</div>'+
+    macroHTML(it)+
+    '<div class="rsn">'+esc(r.reason)+(it.check?' <span class="warnline">Numbers look off, tap for details.</span>':'')+(it.ok&&it.na>=800?' <span class="warnline">'+r0(it.na)+' mg sodium.</span>':'')+'</div></button>'+
+    '<span class="v '+r.v+'">'+r.label+'</span>'+
+    (it.ok?'<button class="add'+(n?' has':'')+'" '+(it.i<0?'data-act="addx" data-k="'+esc(it.key)+'"':'data-act="add" data-i="'+it.i+'"')+' aria-label="Add '+esc(it.name)+' to plate">'+(n?'+<i class="cnt">'+n+'</i>':'+')+'</button>':'')+
+    '</div><div class="detail">'+det+'</div></div>';
+}
+function listHTML(){
+  var mode=S.prof.goal,ci=curItems(),q=S.q.trim().toLowerCase(),hidden=0,h='';
+  var ok=function(it){return S.showAll||allowed(it,S.prof)};
+  if(q){
+    var seen={},res=ci.all.concat(saladPool(curLoc())).filter(function(it){return it.name.toLowerCase().indexOf(q)>=0}).filter(function(it){if(seen[it.key])return false;seen[it.key]=1;return true}).filter(function(it){if(ok(it))return true;hidden++;return false});
+    h+=res.length?res.map(function(it){return itemRow(it,mode)}).join(''):'<p class="empty">Nothing matches “'+esc(S.q)+'”.</p>';
+  }else{
+    var allowedAll=ci.all.filter(function(it){return allowed(it,S.prof)});
+    var picks=topPicks(allowedAll.filter(function(it){return !S.nope[it.key]}),mode,6);
+    var favs=[],seenF={};allowedAll.forEach(function(it){if(S.fav[it.key]&&!seenF[it.key]){seenF[it.key]=1;favs.push(it)}});
+    if(favs.length)h+='<div class="station picks"><h3>Your favorites here<span>'+favs.length+'</span></h3>'+favs.map(function(it){return itemRow(it,mode)}).join('')+'</div>';
+    if(S.boost){
+      var bm=MICROS.filter(function(m){return m.k===S.boost})[0],seenB={};
+      var bl=allowedAll.filter(function(it){return it.ok&&!it.cond&&(micPct(it,bm)||0)>0}).sort(function(a,b){return micPct(b,bm)-micPct(a,bm)}).filter(function(it){if(seenB[it.name])return false;seenB[it.name]=1;return true}).slice(0,6);
+      h+='<div class="station picks"><h3>Best for '+bm.label+'<span>% daily value</span></h3><p class="rsn" style="margin-top:6px">'+esc(bm.label)+' '+esc(bm.what)+'.</p>'+(bl.length?bl.map(function(it){return itemRow(it,mode)}).join(''):'<p class="empty">No foods here list '+lab(bm)+'.</p>')+'</div>';
+    }
+    h+='<div class="station picks"><h3>Top picks for '+MODES[mode].name+'<span>'+picks.length+'</span></h3>'+(picks.length?picks.map(function(it){return itemRow(it,mode)}).join(''):'<p class="empty">No foods here rate Great for your goal and food rules this meal. Build my plate can still combine smaller ones, or try Compare halls.</p>')+'</div>';
+    var shownSt=ci.st.map(function(st){return{st:st,its:st.items.filter(function(it){if(ok(it))return true;hidden++;return false})}}).filter(function(x){return x.its.length});
+    var few=shownSt.length<=2;
+    if(shownSt.length)h+='<div class="st-head"><h2>Full menu</h2>'+(few?'':'<button class="link" data-act="stall">'+(shownSt.every(function(x){return S.stOpen[x.st.name]})?'Close all':'Open all')+'</button>')+'</div>';
+    shownSt.forEach(function(x){
+      var st=x.st,its=x.its,g=its.filter(function(it){return rate(it,mode).v==='good'}).length,op=few||S.stOpen[st.name];
+      h+='<details class="station fold" data-st="'+esc(st.name)+'"'+(op?' open':'')+'><summary><h3>'+esc(st.name)+'<span>'+its.length+' item'+(its.length===1?'':'s')+(g?' \u00b7 '+g+' great':'')+'</span></h3></summary><div class="sbody">'+(op?its.map(function(it){return itemRow(it,mode)}).join(''):'')+'</div></details>';
+    });
+    var sp=saladPool(curLoc());
+    if(sp.length){
+      var groups=['Greens','Protein','Veggies','Toppings','Dressings'];
+      h+='<details class="station salad"'+(S.saladOpen?' open':'')+' data-salad><summary><h3>Salad bar<span>not on the online menu</span></h3></summary><p class="hint" style="margin-top:6px">Most dining halls have one, but it doesn\u2019t show online. These are typical values for one scoop. Real scoops vary.</p>'+
+        groups.map(function(g){var its=sp.filter(function(it){return it.sgroup===g});return its.length?'<div class="dt">'+g+'</div>'+its.map(function(it){return itemRow(it,mode)}).join(''):''}).join('')+'</details>';
+    }
+    if(!h)h='<p class="empty">No foods here match your food rules.</p>';
+  }
+  if(hidden||S.showAll)h+='<p class="hint">'+(S.showAll?'Showing foods your rules would hide. ':hidden+' hidden by your food rules. ')+'<button class="link" data-act="showall">'+(S.showAll?'Hide them again':'Show them')+'</button></p>';
+  return h;
+}
+function helpBody(){
+  var m=S.prof.goal,crit={
+    balanced:['A good mix: decent protein, fiber or vitamins, and not loaded with sodium, sugar or saturated fat. Veggie and fruit sides count too.','Useful, but either light on nutrients or a bit heavy on salt, sugar or fat. Balance it with lighter sides.','Heavy on two of: sodium (900 mg+), sugar, saturated fat or calories. Or a sweet treat. Fine sometimes.'],
+    protein:['20 g or more protein, or 12 g or more that is lean (30%+ of its calories from protein).','8 to 19 g of protein. Useful, but pair it with something bigger.','Under 8 g. It won\u2019t move a protein goal.'],
+    cut:['Lean (30%+ of calories from protein) and 450 cal or less, or a low calorie fibrous side.','Fits if you balance it with the rest of your plate.','Lots of sugar, or lots of calories for little protein.'],
+    bulk:['18 g or more protein with 250+ cal, or 400+ cal with 12 g or more protein.','200+ cal or 10 g or more protein. Helpful extras.','Small and light. It barely moves your calories.']
+  }[m];
+  return '<div class="help"><div class="hb">'+
+   '<div>Every food is rated for your goal, <b>'+MODES[m].name+'</b>.</div>'+
+   '<div><span class="v good">Great</span>'+crit[0]+'</div><div><span class="v okay">Okay</span>'+crit[1]+'</div><div><span class="v skip">Skip</span>'+crit[2]+'</div>'+
+   '<div><b>P / C / F</b> are grams of protein, carbs and fat in one listed serving. <b>Cal</b> is calories.</div>'+
+   '<div><b>Meal budget:</b> your daily target times this meal\u2019s share (breakfast 25%, lunch 35%, dinner 40%). The bars fill as you add food.</div>'+
+   '<div><b>Tap a food\u2019s name</b> to see why it got its rating, what it does for you, the full nutrition and allergen labels. Tap <b>+</b> to add it to your plate.</div>'+
+   '<div><b>Vitamins &amp; minerals</b> show the amount and the percent of the daily value (the standard used on food labels). If a food doesn\u2019t list one, it shows a dash, not zero.</div>'+
+   '<div><b>Log this meal</b> on the Plate tab adds it to Today. The meal budget above then adjusts to what you have left for the day.</div>'+
+   '<div><b>Compare</b> ranks every place on campus serving this meal by the best plate it can make for you, open places first.</div>'+
+   '<div><b>Salad bar</b> sits at the bottom of the menu. It isn\u2019t online, so it uses typical values, and Build my plate can use its proteins (chickpeas, edamame, eggs, tofu). Turn it off under You \u203a App if your hall has none.</div>'+
+   '<div><b>Build my plate</b> picks a mix of foods that lands near your budget. Tap it again for another plate.</div><div><b>Full menu</b> is grouped by station. Tap a station to open it.</div></div></div>';
+}
+function tipHTML(){
+  if(S.tipDone)return '';
+  return '<div class="tip"><div class="tip-h">New here? Three steps.</div><ol><li>Pick the meal up top. It switches on its own at meal times.</li><li>Tap <b>Build my plate</b>, or tap <b>+</b> on foods you want.</li><li>On the Plate tab, tap <b>Log this meal</b>. Today keeps your totals.</li></ol>'+
+    '<div class="tip-k"><span class="v good">Great</span><span class="v okay">Okay</span><span class="v skip">Skip</span> = how well a food fits your goal. Tap any food to see why.</div>'+
+    '<div class="actions" style="margin-top:10px"><button class="btn sm solid" data-act="tipdone">Got it</button><button class="btn sm" data-act="help">How ratings work</button></div></div>';
+}
+function helpSheet(){
+  return '<div class="wrap" role="dialog" aria-modal="true" aria-label="How it works"><div class="top"><h1>How it works</h1><button class="btn sm" data-act="closesheet">Done</button></div>'+helpBody()+'</div>';
+}
+function menuView(){
+  var site=curSite(),loc=curLoc();
+  if(!loc)return '<h1>No menus</h1><p class="lede">This file has no menus for that campus.</p><div class="actions"><button class="btn solid" data-act="picker">Change place</button></div>';
+  ensurePeriod();
+  var dn=dataNote(),hrs=loc.hours&&loc.hours[dateKey(campusNow(loc))],b=mealBudget();
+  var hs=hoursState(loc);
+  return '<div class="eyebrow">'+esc(site.name)+'</div><h1 class="hall">'+esc(loc.name)+'</h1>'+
+    '<div class="status"><b class="'+(hs.open?'':'off')+'">'+esc(hs.txt)+'</b>'+(hrs?' \u00b7 '+esc(hoursText(hrs)):'')+' <button class="link inl" data-act="picker">Change hall</button></div>'+
+    (AL.some(function(a){return isAllergy(a)&&S.prof.avoid.indexOf(a.k)>=0})&&tagRate(loc)>=0.05?'<p class="status">Allergen labels on '+r0(tagRate(loc)*100)+'% of foods here. <button class="link inl" data-act="acard">Allergy card</button></p>':'')+
+    ((S.prof.avoid.length||S.prof.diet!=='none')&&tagRate(loc)<0.05?'<div class="banner">This place doesn\u2019t publish allergen or diet labels. We can only filter by food names and ingredients, so ask staff before you eat.</div>':'')+
+    (dn.stale?(LIVE?'<div class="banner"><span>Showing '+esc(fmtDay(dn.md))+'\u2019s menu. Today\u2019s menu updates early each morning, so check back soon.</span></div>':'<div class="banner row-b"><span>Menu is from '+esc(fmtDay(dn.md))+', not today.</span><label class="btn sm">Load today\u2019s menu file<input type="file" id="f-file" class="sr-only" accept=".json,application/json"></label></div>'):'')+
+    '<div class="seg" style="margin-top:14px" role="group" aria-label="Meal">'+periodsOf(loc).map(function(p){return '<button data-act="period" data-v="'+esc(p)+'" aria-pressed="'+(p===S.period)+'">'+esc(p)+'</button>'}).join('')+'</div>'+
+    '<div id="budget">'+budgetStrip(b)+'</div>'+
+    '<div class="actions" style="margin-top:12px"><button class="btn solid" data-act="build">Build my plate</button><button class="btn" data-act="compare">Compare halls</button></div>'+
+    '<p class="mode-line">Rated for <b>'+MODES[S.prof.goal].name+'</b>'+(S.prof.diet&&S.prof.diet!=='none'?' \u00b7 '+DIETNAME[S.prof.diet]:'')+' \u00b7 <button class="link inl" data-act="help">How ratings work</button></p>'+
+    tipHTML()+
+    '<div style="margin-top:14px"><input type="search" id="f-q" placeholder="Search this menu" value="'+esc(S.q)+'" autocomplete="off" aria-label="Search this menu"></div>'+
+    '<details class="boost"'+(S.boost?' open':'')+'><summary>Find foods high in a vitamin or mineral</summary><div class="chips" style="margin-top:8px">'+MICROS.map(function(m){return '<button class="chip" data-act="boost" data-v="'+m.k+'" aria-pressed="'+(S.boost===m.k)+'">'+m.label+'</button>'}).join('')+'</div></details>'+
+    '<div class="list" id="list">'+listHTML()+'</div>'+
+    '<p class="foot">Nutrition comes from the published dining data'+(dn.when?' (pulled '+esc(dn.when)+')':'')+'. Treat it as a good estimate, not a guarantee.</p>';
+}
+function micPanel(){
+  if(!S.plate.length)return '';
+  var share=mealShare(S.period),mt=micTotals(S.plate),ins=micInsights(S.plate,share);
+  var rows=MICROS.map(function(m){var x=mt[m.k],tg=microTarget(m,S.prof),goal=tg*share,pc=Math.min(100,x.sum/goal*100);
+    return '<div class="brow"><span class="l">'+m.label+'</span><div class="meter" style="margin:0"><i style="width:'+pc+'%"></i></div><span class="t">'+(x.known?r0(x.sum/tg*100)+'% of your day':'not listed')+'</span></div>'}).join('');
+  return '<details class="panel fold-p"><summary><h2>Vitamins &amp; minerals</h2><span class="mono">'+MICROS.filter(function(m){return mt[m.k].known}).length+' listed</span></summary><p class="hint" style="margin:8px 0 4px">Bars fill to this meal\u2019s share ('+r0(share*100)+'%) of your daily target, the same targets Today uses. Some foods don\u2019t list vitamins, so totals can read low.</p>'+rows+
+    (ins.length?'<ul class="facts">'+ins.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>':'')+'</details>';
+}
+function subTabs(key,list){
+  return '<div class="seg subtabs" role="group">'+list.map(function(t){return '<button data-act="sub" data-k="'+key+'" data-v="'+t[0]+'" aria-pressed="'+(S[key]===t[0])+'">'+t[1]+'</button>'}).join('')+'</div>';
+}
+function plateView(){
+  var b=mealBudget(),t=totals(S.plate),v=verdict(t,b,S.prof.goal),ins=plateInsights(t,b,S.prof.goal);
+  var head='<div class="eyebrow">'+esc(curLoc()?curLoc().name:'')+' \u00b7 '+esc(S.period)+'</div><h1>Your plate</h1>'+
+    subTabs('psub',[['plate','Plate'+(S.plate.length?' ('+S.plate.length+')':'')],['extras','Add extras'],['saved','Saved'+(S.saved.length?' ('+S.saved.length+')':'')]]);
+  if(S.psub==='extras')return head+'<p class="lede">Foods that aren\u2019t on the online menu: salad bar combos, fruit, milk, a protein shake, or anything you type in.</p>'+quickSaladHTML()+extrasHTML();
+  if(S.psub==='saved')return head+savedView();
+  if(!S.plate.length)return head+'<div class="panel empty-state"><p><b>Your plate is empty.</b></p><p class="hint">Let the app pick a plate that fits your '+esc(S.period.toLowerCase())+' budget, or add foods from the menu with +.</p><div class="actions"><button class="btn solid" data-act="build">Build my plate</button><button class="btn" data-act="tab" data-v="menu">Browse the menu</button></div></div>'+
+    (S.saved.length?'<p class="hint">Or load one of your <button class="link inl" data-act="sub" data-k="psub" data-v="saved">saved plates</button>.</p>':'');
+  var rows='<ul class="plate-items">'+S.plate.map(function(e,idx){var r=rate(e.item,S.prof.goal);var side=r.v==='skip';return '<li><div style="min-width:0"><div class="nm">'+esc(e.item.name)+' <span class="v '+(side?'none':r.v)+'" style="margin-left:4px"'+(side?' title="Low protein on its own, here as a side"':'')+'>'+(side?'Side':r.label)+'</span></div><div class="sub">'+(e.q!==1?fmtQ(e.q)+' \u00d7 ':'')+esc(e.item.portion)+' \u00b7 <b>'+r0(e.item.cal*e.q)+' cal</b> \u00b7 '+r0(e.item.p*e.q)+'P</div></div><div class="step"><button class="icon" data-act="dec" data-n="'+idx+'" aria-label="Less '+esc(e.item.name)+'">\u2212</button><span class="qty">\u00d7'+fmtQ(e.q)+'</span><button class="icon" data-act="inc" data-n="'+idx+'" aria-label="More '+esc(e.item.name)+'">+</button></div></li>'}).join('')+'</ul>';
+  function bar(label,val,goal,cls,unit){var pc=Math.min(100,goal?val/goal*100:0);if(!cls&&goal&&val>goal*1.1)cls='over';return '<div class="brow"><span class="l">'+label+'</span><div class="meter '+cls+'" style="margin:0"><i style="width:'+pc+'%"></i></div><span class="t">'+r0(val)+(goal?' / '+goal:'')+unit+'</span></div>'}
+  return head+
+    '<div class="panel">'+rows+
+    '<div class="hero"><div><div class="n">'+r0(t.cal)+'</div><div class="l">calories</div></div><div><div class="n">'+r0(t.p)+'g</div><div class="l">protein</div></div><div><div class="n">'+r0(t.c)+'g</div><div class="l">carbs</div></div><div><div class="n">'+r0(t.f)+'g</div><div class="l">fat</div></div></div>'+
+    bar('Calories',t.cal,b.cal,'','')+bar('Protein',t.p,b.p,'p',' g')+bar('Sodium',t.na,r0(2300*(S.prof.lowNa?0.65:1)*mealShare(S.period)),t.na>2300*mealShare(S.period)?'over':'lim',' mg')+
+    (function(){var lim=2300*(S.prof.lowNa?0.65:1)*mealShare(S.period);if(t.na>lim*1.1&&v.tone==='ok')v={tone:'warn',text:'Good protein and calories, but salty: '+r0(t.na).toLocaleString()+' mg sodium. Go easy on salt the rest of today.'};return ''})()+
+    '<p class="verdict '+v.tone+'">'+esc(v.text)+'</p>'+
+    (function(){var g={};S.plate.forEach(function(e){AL.forEach(function(a){if(isAllergy(a)&&(e.item.groups[a.k]||(e.item.may&&e.item.may[a.k])))g[a.label]=1})});var k=Object.keys(g);return k.length?'<p class="hint">This plate lists: '+esc(k.join(', '))+'. Confirm with staff if you have an allergy.</p>':''})()+
+    '<div class="actions"><button class="btn solid" data-act="log">Log this meal</button><button class="btn" data-act="build">'+(S.variants.length>1?'Try another':'Build my plate')+'</button></div>'+
+    '<p class="plate-links"><button class="link inl" data-act="savequick">Save</button><button class="link inl" data-act="copy">Copy</button><button class="link inl" data-act="clear">Clear</button>'+(S.variants.length?'<span>Plate '+(S.vi+1)+' of '+S.variants.length+'</span>':'')+'</p><p class="hint">Tap \u2212 to drop a food to a half serving.</p><textarea id="copybox" hidden readonly aria-label="Plate as text"></textarea></div>'+
+    (ins.length?'<div class="panel"><div class="panel-head"><h2>What this plate does for you</h2></div><ul class="facts" style="margin-top:0">'+ins.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>':'')+
+    micPanel();
+}
+function quickSaladHTML(){
+  if(!saladPool(curLoc()).length)return '';
+  return '<div class="panel"><div class="panel-head"><h2>Quick salads</h2></div><p class="hint" style="margin:0 0 10px">Ready-made salad bar combos. Tap one to add it, then adjust scoops with \u2212 and +. Every salad bar item is under Salad bar on the Menu tab.</p>'+
+    QUICK_SALADS.map(function(q,i){var its=q.items.map(function(x){return{item:saladByName(x[0]),q:x[1]}}).filter(function(e){return e.item&&allowed(e.item,S.prof)}),t=totals(its);
+      return '<div class="row" style="border-top:1px solid var(--line)"><div style="flex:1;min-width:0"><div class="nm">'+esc(q.name)+'</div><div class="sub">'+its.map(function(e){return esc(e.item.name)+(e.q>1?' \u00d7'+e.q:'')}).join(', ')+'</div><div class="sub"><b>'+r0(t.cal)+' cal</b> \u00b7 '+r0(t.p)+'g protein</div></div><button class="btn sm" data-act="qsalad" data-n="'+i+'">Add</button></div>'}).join('')+'</div>';
+}
+function extrasHTML(){
+  var chips=EXTRAS.map(function(x,i){return allowed(mkItem(x[0],x[1],x[2],x[3],x[4],x[5],x[6]),S.prof)?'<button class="chip" data-act="extra" data-n="'+i+'">'+esc(x[0])+'</button>':''}).join('')+
+    S.custom.map(function(x,i){return allowed(mkItem(x[0],x[1],x[2],x[3],x[4],x[5],0,true),S.prof)?'<button class="chip" data-act="custom" data-n="'+i+'">'+esc(x[0])+'</button>':''}).join('');
+  return '<div class="panel"><div class="panel-head"><h2>Not on the menu?</h2></div><p class="hint" style="margin:0 0 10px">Fruit, milk, your own protein shake. Tap to add with typical values, or enter your own.</p><div class="chips">'+chips+'</div>'+
+    '<div class="fields" style="margin-top:12px"><label class="tf" style="grid-column:1/-1">Food name<input type="text" id="c-name" placeholder="Deli sandwich"></label>'+
+    '<label class="tf">Calories<input type="number" id="c-cal" inputmode="numeric"></label><label class="tf">Protein (g)<input type="number" id="c-p" inputmode="numeric"></label>'+
+    '<label class="tf">Carbs (g)<input type="number" id="c-c" inputmode="numeric"></label><label class="tf">Fat (g)<input type="number" id="c-f" inputmode="numeric"></label></div>'+
+    '<div class="actions"><button class="btn sm" data-act="addcustom">Add custom food</button></div></div>';
+}
+function resolveSaved(x,by){
+  if(by[x.n+'|'+x.port])return by[x.n+'|'+x.port];
+  if(/^s\|/.test(x.k||'')||x.sb){var si=saladByName(x.n);if(si)return si}
+  if(x.x)return mkItem(x.n,x.port,x.x[0],x.x[1],x.x[2],x.x[3],x.x[4],x.cu);
+  return null;
+}
+function savedView(){
+  var items=curItems().all,by={};items.forEach(function(it){by[it.key]=it});
+  var h=(S.plate.length?'<div class="panel"><div class="panel-head"><h2>Save your current plate</h2></div><div class="fields" style="grid-template-columns:1fr auto;align-items:end"><label class="tf">Name<input type="text" id="f-name" placeholder="Post-lift dinner"></label><button class="btn solid" data-act="save">Save</button></div></div>':'')+
+    '<div class="panel"><div class="panel-head"><h2>Saved plates</h2></div><p class="hint" style="margin:0 0 6px">Plates you eat again and again. When the same foods are on the menu, load one in a tap.</p>';
+  if(!S.saved.length)return h+'<p class="empty">Nothing saved yet. Build a plate you like and save it.</p></div>';
+  return h+S.saved.map(function(sv,idx){
+    var have=[],miss=[];sv.items.forEach(function(x){var it=resolveSaved(x,by);if(it)have.push({item:it,q:x.q});else miss.push(x)});
+    var t=totals(have);
+    return '<div class="saved-card"><h3>'+esc(sv.name)+'</h3><p>'+esc(sv.hall||'')+' \u00b7 '+esc(sv.period||'')+'</p><p>'+sv.items.map(function(x){return esc(x.n)+(x.q!==1?' \u00d7'+fmtQ(x.q):'')}).join(', ')+'</p>'+
+      '<p class="mono">'+r0(t.cal)+' cal \u00b7 '+r0(t.p)+'g protein on today\u2019s menu</p>'+(miss.length?'<p class="warnline">Not on this menu: '+miss.map(function(x){return esc(x.n)}).join(', ')+'</p>':'')+
+      '<div class="actions" style="margin-top:8px"><button class="btn sm solid" data-act="loadsaved" data-n="'+idx+'" '+(have.length?'':'disabled')+'>Load to plate</button><button class="btn sm" data-act="lognow" data-n="'+idx+'" '+(have.length?'':'disabled')+'>Log it now</button><button class="btn sm" data-act="delsaved" data-n="'+idx+'">Delete</button></div></div>'}).join('')+'</div>';
+}
+function ring(val,goal,label,unit,tok){
+  var pc=goal?Math.min(1,val/goal):0,C=2*Math.PI*42;
+  return '<div class="ring"><svg viewBox="0 0 100 100" width="96" height="96" aria-hidden="true"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--line)" stroke-width="9"/>'+
+    '<circle cx="50" cy="50" r="42" fill="none" stroke="var(--'+tok+')" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(C*pc).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 50 50)"/></svg>'+
+    '<div class="rv"><div class="n">'+r0(val).toLocaleString()+'</div><div class="l">of '+goal.toLocaleString()+unit+'</div></div><div class="rl">'+label+'</div></div>';
+}
+function fillGap(lc,lp,mode){
+  var out=[],c=lc,p=lp,pool=EXTRAS.filter(function(x){return allowed(mkItem(x[0],x[1],x[2],x[3],x[4],x[5],x[6]),S.prof)}).map(function(x){return{n:x[0],port:x[1],cal:x[2],p:x[3]}});
+  var prot=pool.filter(function(x){return x.p/x.cal>=0.12}).sort(function(a,b){return b.p/b.cal-a.p/a.cal});
+  var dense=pool.filter(function(x){return /milk|peanut|oat|banana/i.test(x.n)});
+  for(var i=0;i<4;i++){
+    var pick=null;
+    if(p>10)pick=prot.filter(function(x){return x.cal<=c+80||mode==='bulk'})[0];
+    else if(mode==='bulk'&&c>150)pick=dense[i%dense.length];
+    if(!pick)break;
+    out.push(pick);c-=pick.cal;p-=pick.p;
+    prot=prot.filter(function(x){return x!==pick});
+  }
+  return out;
+}
+function trainingPanel(d){
+  var wk=d.wk||trainToday(),kg=S.prof.lb*0.45359237,list=(S.train[dateKey()]||[]),t=d.t,p=S.prof;
+  var summary=wk.sessions.length?wk.sessions.map(function(w){return METS[w.type].label+' '+w.min+' min'+(w.planned?' (planned)':'')}).join(', ')+' · about '+wk.kcal+' cal':(p.trainOn?'Rest day':'Optional. Tap to log one.');
+  var h='<details class="panel tpanel" data-tp'+(S.trainOpen?' open':'')+'><summary><span class="tp-h">Workouts</span><span class="tp-s">'+esc(summary)+'</span></summary>';
+  h+='<p class="hint" style="margin:10px 0">'+(p.trainOn?'Your workouts change today’s calorie and carb targets.':'Log workouts to see what you burned. Turn on “Use my workouts” under You to let them change your targets.')+' Only log walks you take as a workout. Walking to class is already counted.</p>';
+  h+='<div class="chips">'+Object.keys(METS).map(function(k){return '<button class="chip" data-act="wtype" data-v="'+k+'" aria-pressed="'+(S.wf.type===k)+'">'+METS[k].label+'</button>'}).join('')+'</div>'+
+    '<div class="seg" style="margin-top:10px" role="group" aria-label="Effort">'+INTS.map(function(x,i){return '<button data-act="wint" data-v="'+i+'" aria-pressed="'+(S.wf.int===i)+'">'+x+'</button>'}).join('')+'</div>'+
+    '<p class="hint" id="w-eff">'+esc(METS[S.wf.type].eff[S.wf.int])+'</p>'+
+    (METS[S.wf.type].dist?'<div class="fields" style="margin-top:6px"><label class="tf" style="grid-column:1/-1">Miles (optional, sets your pace)<input type="number" id="w-mi" inputmode="decimal" step="0.1" placeholder="e.g. 3.1"></label></div>':'')+
+    '<div class="fields" style="margin-top:10px"><label class="tf">Minutes<input type="number" id="w-min" inputmode="numeric" min="5" max="300" value="'+((plansOf(p)[0]||{}).min||60)+'"></label><label class="tf">Watch calories (optional)<input type="number" id="w-watch" inputmode="numeric" placeholder="from your watch"></label></div>'+
+    '<div class="actions"><button class="btn solid" data-act="wlog">Log workout</button></div>';
+  if(wk.sessions.length)h+='<div style="margin-top:10px">'+wk.sessions.map(function(w){var i=list.indexOf(w);return '<div class="row" style="border-top:1px solid var(--line)"><div style="flex:1;min-width:0"><div class="nm">'+esc(METS[w.type].label)+' · '+w.min+' min · '+INTS[w.int]+(w.planned?' · planned':'')+'</div><div class="sub">'+(w.mi?w.mi+' mi ('+(Math.round(w.min/w.mi*10)/10)+' min/mile) \u00b7 ':'')+'About '+workoutKcal(w,kg)+' cal burned'+(w.watch?' (75% of your watch’s '+w.watch+')':'')+(w.planned?'. Counted until you log a '+METS[w.type].label.toLowerCase()+' session.':'')+'</div></div>'+(w.planned?'<button class="btn sm" data-act="wdone" data-v="'+w.type+'">Did it</button>':'<button class="btn sm" data-act="wdel" data-n="'+i+'">Remove</button>')+'</div>'}).join('')+'</div>';
+  if(p.trainOn&&!p.calO){
+    var goalTxt=p.goal==='balanced'?'kept as is to maintain':p.goal==='cut'?'then −18% to lose fat':p.goal==='bulk'?'then +350 to build muscle':'kept as is to maintain';
+    var wkc=weekCal(p);
+    h+='<div class="dt">Today’s math</div><p class="mono" style="font-size:.78rem;line-height:1.7">Your body at rest '+t.bmr.toLocaleString()+' + everyday walking and moving '+(Math.round(t.bmr*1.35)-t.bmr).toLocaleString()+'<br>+ workouts '+t.burn.toLocaleString()+' = about '+(Math.round(t.bmr*1.35)+t.burn).toLocaleString()+' burned<br>'+(t.eaRaised?'then raised to protect your energy (see below)':goalTxt+', rounded')+' = <b>'+d.cal.toLocaleString()+' cal target</b></p>'+
+      (t.ea!=null?'<p class="hint">'+(t.eaRaised?'<b>We raised your target.</b> Your cut left less than 30 calories per kg of lean mass for your body after training, which is a common warning sign for low energy availability (REDs), linked to stress fractures, hormone problems and worse training. ':'')+'After training, your body has about '+Math.round(t.ea)+' cal per kg of lean mass ('+Math.round(t.ffm)+' kg estimated). About 30 is a common rule of thumb, not a guarantee; the 2023 IOC consensus says there\u2019s no single safe cutoff, so watch for fatigue, injuries or missed periods.</p>':'')+
+      (p.goal==='cut'&&t.burn&&!t.eaRaised?'<p class="hint">You eat back about '+Math.round(t.burn*0.82)+' of the '+t.burn+' cal you burned, so your calorie cut stays at 18%.</p>':'')+
+      '<p class="hint">Your planned week averages '+Math.round(wkc.on/7).toLocaleString()+' cal a day. Higher on training days, lower on rest days.</p>';
+  }
+  return h+'</details>';
+}
+function nrow(label,val,goal,unit,kind,note){
+  var pc=goal?Math.min(100,val/goal*100):0,over=kind==='limit'&&val>goal,cls=kind==='limit'?(over?'over':'lim'):'';
+  return '<div class="nrow"><span class="l">'+label+'</span><div class="meter '+cls+'" style="margin:0"><i style="width:'+pc+'%"></i></div><span class="t">'+(Math.round(val*10)/10)+unit+(goal?' / '+goal+unit:'')+(kind==='limit'?' max':'')+'</span>'+(note?'<span class="nn">'+note+'</span>':'')+'</div>';
+}
+function athleteNotes(prof){
+  var out=[],loc=curLoc(),mo=new Date().getMonth(),lat=loc&&loc.lat?Math.abs(+loc.lat):0;
+  if(lat>=40&&(mo>=10||mo<=2))out.push('<b>Vitamin D:</b> from November to March, the sun this far north is too weak for your skin to make much vitamin D. Fortified milk, eggs and fish matter more now.');
+  if(prof.trainOn&&plansOf(prof).some(function(x){return x.type==='run'||x.type==='sport'}))out.push('<b>Iron:</b> runners and field athletes lose some iron through sweat and foot impact. Pair beans or greens with vitamin C, and skip tea or coffee with iron-rich meals.');
+  if(prof.trainOn&&prof.sex==='f')out.push('<b>Calcium and energy:</b> eating too little for your training raises the risk of stress fractures and missed periods. Keep calcium up and don’t skip meals on training days.');
+  if(prof.diet==='vegan')out.push('<b>Vitamin B12:</b> B12 comes only from animal foods and fortified foods. Look for fortified soy milk or cereal, or ask a doctor about a supplement.');
+  return out.length?'<div class="dt" style="margin-top:14px">For you</div><ul class="facts" style="margin-top:4px">'+out.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>':'';
+}
+function nutritionPanels(t,d,prof,cov){
+  var fiT=Math.round(d.cal/1000*14),satT=Math.round(d.cal*0.10/9);
+  var h='<div class="panel"><div class="panel-head"><h2>Macros and limits</h2></div>'+
+    nrow('Carbs',t.c,d.t.carbs,' g','goal',S.prof.trainOn?'Carb goal for a '+({rest:'rest',train:'training',endurance:'long training'}[d.t.dayType])+' day: '+CARBS[d.t.dayType][S.prof.goal]+' g per kg.':'')+nrow('Fat',t.f,d.t.fat,' g','goal',(d.t.fat>d.t.fatMin?'At least '+d.t.fatMin+' g (20% of calories)':'20% of your calories')+' for hormones and vitamin absorption. Protein, carbs and fat goals add up to your calorie target.')+
+    nrow('Fiber',t.fi,fiT,' g','goal')+
+    nrow('Sugar',t.sug,50,' g','limit','Total sugar, including fruit and milk. The 50 g limit is for added sugar, so treat this as a rough guide.')+
+    (function(){var wk=d.wk||{},long=(wk.sessions||[]).reduce(function(a,w){return a+(w.type==='walk'?0:w.min)},0)>=120;return long&&!prof.lowNa?nrow('Sodium',t.na,0,' mg','goal','Long training day. You lose sodium in sweat, so salty foods or a sports drink are fine today rather than something to limit.'):nrow('Sodium',t.na,prof.lowNa?1500:2300,' mg','limit')})()+
+    nrow('Saturated fat',t.sat,satT,' g','limit')+
+
+    '<p class="hint">Fiber goal is 14 g per 1,000 calories. Limits come from the Dietary Guidelines and FDA Daily Values.</p></div>';
+  h+='<div class="panel"><div class="panel-head"><h2>Vitamins and minerals</h2></div>'+MICROS.map(function(m){
+      var goal=microTarget(m,prof),kn=t.mk[m.k],miss=cov&&kn<cov;
+      return nrow(m.label,t.m[m.k],goal,' '+m.unit,'goal',miss?'Listed for '+kn+' of '+cov+' foods, so this may read low.':'')}).join('')+
+    athleteNotes(prof)+
+    '<p class="hint">Targets are the recommended daily amounts for your age and sex'+((prof.diet==='vegetarian'||prof.diet==='vegan')?', with iron raised 1.8\u00d7 because plant iron absorbs less':(prof.trainOn&&plansOf(prof).some(function(x){return /run|sport|hiit|bike|swim/.test(x.type)})?', with iron raised 1.3\u00d7 for regular endurance or sport training':''))+'. Not in the dining data: omega-3, magnesium, zinc, folate and B12. Fish, beans, greens, eggs and dairy cover most of them.</p></div>';
+  h+=whyPanel();
+  return h;
+}
+function todayView(){
+  var d=dayTargets(S.prof),meals=todayLog(),t=dayTotals(meals),mode=S.prof.goal;
+  var lc=r0(d.cal-t.cal),lp=r0(d.p-t.p),hit=dayHit(meals,d,mode),msg;
+  if(!meals.length)msg='Nothing logged yet today.';
+  else if(hit)msg=mode==='balanced'?'Protein and calories on track for today.':mode==='bulk'?'Calories and protein goal hit for today.':mode==='cut'?'Protein goal hit for today.':'Protein goal hit for today.';
+  else if(mode==='cut'&&t.cal>d.cal*1.05)msg=(-lc).toLocaleString()+' cal over today'+(lp>0?', '+lp+' g protein still to go.':'.');
+  else msg=Math.max(0,lp)+' g protein and '+Math.max(0,lc).toLocaleString()+' cal left today.';
+  var h='<div class="eyebrow">'+esc(fmtDay(dateKey()))+'</div><h1>Today</h1><p class="lede">Every meal you log adds up here. Your next meal’s budget shrinks or grows to keep you on track for '+MODES[mode].name+'.</p>';
+  h+='<div class="panel"><div class="rings">'+ring(t.p,d.p,'Protein',' g','p')+ring(t.cal,d.cal,'Calories','','cal')+ring(t.fi,Math.round(d.cal/1000*14),'Fiber',' g','c')+'</div>'+
+    '<p class="mono" style="text-align:center;margin-top:12px;font-size:.8rem">'+r0(t.c)+' g carbs · '+r0(t.f)+' g fat</p>'+
+    (meals.length?'<p class="verdict '+(hit?'ok':'warn')+'" style="text-align:center">'+esc(msg)+'</p>':'')+'</div>';
+  if(!meals.length)h+='<div class="panel empty-state"><p><b>Nothing logged yet.</b></p><p class="hint">Build or pick a plate on the Menu tab, then tap Log this meal. Your protein, calories, fiber, vitamins and minerals for the day all show up here.</p><div class="actions"><button class="btn solid" data-act="tab" data-v="menu">Go to the menu</button></div></div>';
+  h+=trainingPanel(d);
+  if(meals.length){
+    h+=nutritionPanels(t,d,S.prof,t.n);
+    var bk=Object.keys(t.ben);
+    h+='<div class="panel"><div class="panel-head"><h2>Food wins today</h2></div>'+(bk.length?'<ul class="facts" style="margin-top:0">'+BENEFITS.filter(function(b){return t.ben[b.k]}).map(function(b){return '<li><b>'+esc(b.label)+':</b> '+esc(b.txt)+'</li>'}).join('')+'</ul>':'<p class="empty">Nothing special flagged yet. Yogurt, beans, fish, berries, greens or whole grains would show up here.</p>')+
+      (meals.length>t.full?'<p class="hint">Meals logged before this update only count calories and macros.</p>':'')+'</div>';
+  }
+  var fg=meals.length&&!hit&&new Date().getHours()>=19?fillGap(lc,lp,mode):[];
+  if(fg.length)h+='<div class="panel"><div class="panel-head"><h2>Fill the gap</h2></div><p class="hint" style="margin:0 0 8px">Easy add-ons to close today’s gap. Typical values.</p><ul class="facts" style="margin-top:0">'+fg.map(function(x){return '<li>'+esc(x.n)+' ('+esc(x.port)+'): '+x.cal+' cal, '+r0(x.p)+' g protein</li>'}).join('')+'</ul></div>';
+  if(S.saved.length)h+='<div class="panel"><div class="panel-head"><h2>Your usuals</h2></div><p class="hint" style="margin:0 0 4px">Log a saved plate in one tap.</p>'+S.saved.slice(0,4).map(function(sv,idx){return '<div class="row" style="border-top:1px solid var(--line)"><div style="flex:1;min-width:0"><div class="nm">'+esc(sv.name)+'</div><div class="sub">'+esc(sv.hall||'')+' · '+esc(sv.period||'')+'</div></div><button class="btn sm" data-act="lognow" data-n="'+idx+'">Log</button></div>'}).join('')+'</div>';
+  var days=[],now=new Date();for(var i=6;i>=0;i--){var x=new Date(now);x.setDate(now.getDate()-i);days.push(x)}
+  var st=streak(S.log,d,mode);
+  var rule=mode==='balanced'?'90% of your protein without going well over your calories':mode==='bulk'?'90% of your protein and calories':mode==='cut'?'90% of your protein':'90% of your protein';
+  h+='<div class="panel"><div class="panel-head"><h2>This week</h2>'+(st?'<span class="mono" style="font-size:.8rem">'+st+' day streak</span>':'')+'</div><div class="week">'+days.map(function(x){
+    var k=dateKey(x),m=S.log[k]||[],pp=m.reduce(function(a,y){return a+y.tot.p},0),cc=m.reduce(function(a,y){return a+y.tot.cal},0),cls=m.length?(dayHit(m,d,mode)?'hit':'part'):'';
+    return '<div class="'+(k===dateKey()?'today':'')+'"><div class="d">'+x.toLocaleDateString([], {weekday:'narrow'})+'</div><div class="dot '+cls+'" title="'+r0(cc)+' cal, '+r0(pp)+' g protein"></div></div>'}).join('')+'</div>'+
+    '<p class="hint">A filled dot means you hit '+rule+' that day. An outlined dot means you logged something.</p></div>';
+  if(meals.length)h+='<div class="panel"><div class="panel-head"><h2>Meals logged</h2></div>'+(meals.length?meals.map(function(m,idx){
+    return '<div class="saved-card"><h3>'+esc(m.period)+'</h3><p>'+esc(m.hall)+' · '+new Date(m.t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'</p><p>'+m.items.map(function(x){return esc(x.n)+(x.q!==1?' ×'+fmtQ(x.q):'')}).join(', ')+'</p>'+
+      '<p class="mono">'+r0(m.tot.cal)+' cal · '+r0(m.tot.p)+'g protein</p><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="unlog" data-n="'+idx+'">Remove</button></div></div>'}).join(''):
+    '<p class="empty">Build or pick a plate, then tap Log this meal on the Plate tab.</p>')+'</div>';
+  return h;
+}
+function compareHTML(){
+  var site=curSite(),want=mealKey(S.period),rows=[];
+  hallsOf(site).forEach(function(l){
+    var per=periodsOf(l).filter(function(p){return want?mealKey(p)===want:p===S.period})[0];if(!per)return;
+    var items=[],seen={};mealStations(site,l,per).forEach(function(st){st.items.forEach(function(it){if(!seen[it.key]){seen[it.key]=1;if(st.allday)it.allday=true;items.push(it)}})});
+    items=items.filter(function(it){return allowed(it,S.prof)}).concat(saladPool(l,per));
+    var now=campusNow(l),b=adaptBudget(S.prof,per,todayLog(),now),best=suggest(items,b,S.prof.goal,7,{fav:S.fav,nope:S.nope,lowNa:S.prof.lowNa,prof:S.prof,breakfast:want==='breakfast'})[0];
+    var greats=topPicks(items,S.prof.goal,99).length,hs=hoursState(l,now),h=now.getHours()+now.getMinutes()/60,w=WINDOWS[want];
+    var serving=hs.open&&(!w||(h>=w[0]-0.5&&h<=w[1]+0.5));
+    rows.push({nodata:items.filter(function(it){return it.ok&&!it.partial&&!it.check}).length<3,l:l,per:per,best:best,t:best?totals(best.items):null,greats:greats,hs:hs,serving:serving,b:b});
+  });
+  rows.sort(function(a,b){return (b.serving-a.serving)||((b.hs.txt!=='Closed today')-(a.hs.txt!=='Closed today'))||(realHall(b.l)-realHall(a.l))||((b.best?b.best.score:-99)-(a.best?a.best.score:-99))});
+  function why(r){if(!r.t)return r.nodata?'Doesn\u2019t post full nutrition, so no plate can be built.':'No plate fits your rules here.';var dp=r0(r.t.p-r.b.p),dc=r0(r.t.cal-r.b.cal);return (dp>=-5?'Hits your protein':(-dp)+' g short on protein')+' · '+(Math.abs(dc)<=r.b.cal*0.1?'on budget':dc>0?dc+' cal over':(-dc)+' cal under')}
+  return '<div class="wrap" role="dialog" aria-modal="true" aria-label="Compare places"><div class="top"><h1>Compare</h1><button class="btn sm" data-act="closesheet">Close</button></div>'+
+    '<p class="lede">Every place at '+esc(site.name)+' serving '+esc(S.period)+', ranked by how close its best plate gets to your meal budget for '+MODES[S.prof.goal].name+' (protein, calories and balance, not just the most protein). Places serving this meal right now come first.</p>'+
+    (rows.length?rows.map(function(r,i){return '<button class="pick" data-act="hall2" data-v="'+esc(r.l.id)+'" data-p="'+esc(r.per)+'"><b>'+(i===0&&r.best&&r.serving?'Best now: ':i===0&&r.best&&r.hs.txt!=='Closed today'?'Best plate: ':'')+esc(r.l.name)+'<br><small class="mono" style="font-weight:400;color:var(--muted)">'+esc(r.hs.txt)+'<br>'+esc(why(r))+'</small></b><span>'+(r.t?r0(r.t.cal)+' cal · '+r0(r.t.p)+' g P':'no plate')+'<br>'+r.greats+' great food'+(r.greats===1?'':'s')+'</span></button>'}).join(''):'<p class="empty">No other places list this meal.</p>')+'</div>';
+}
+function trainingSettings(){
+  var p=S.prof,plans=plansOf(p),D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var h='<p class="lede">Optional. If you skip this, your activity level sets your calories. Turn it on to have workouts raise calories and carbs on training days.</p><div class="panel"><div class="panel-head"><h2>Workouts</h2></div>'+
+    '<div class="seg" role="group" aria-label="Workout-based targets"><button data-act="train" data-v="on" aria-pressed="'+(!!p.trainOn)+'">Use my workouts</button><button data-act="train" data-v="off" aria-pressed="'+(!p.trainOn)+'">Use activity level</button></div>'+
+    '<p class="hint">With this on, your daily calories start lower (everyday moving only) and each workout adds back what it burned, so nothing counts twice. Until you add sessions below, your target will drop. Training days also raise your carb goal.</p>';
+  if(p.trainOn){
+    var wk=weekCal(p);
+    h+='<p class="hint"><b>Your week:</b> '+wk.on.toLocaleString()+' cal with your plan vs '+wk.off.toLocaleString()+' with the activity level setting.</p>';
+    h+=(plans.length?'':'<p class="hint" style="color:var(--warn)">Add your usual sessions so the app can plan meals before you train.</p>')+
+      plans.map(function(x,i){return '<div class="plan"><div class="dt">Usual session '+(i+1)+'</div><div class="fields"><label class="tf">Type<select data-plan="'+i+'" data-f="type">'+Object.keys(METS).filter(function(k){return k!=='walk'}).map(function(k){return '<option value="'+k+'"'+(x.type===k?' selected':'')+'>'+METS[k].label+'</option>'}).join('')+'</select></label><label class="tf">Minutes<input type="number" inputmode="numeric" data-plan="'+i+'" data-f="min" value="'+x.min+'"></label></div>'+
+        '<div class="seg" style="margin-top:8px" role="group" aria-label="Effort">'+INTS.map(function(n,j){return '<button data-act="pint" data-n="'+i+'" data-v="'+j+'" aria-pressed="'+(x.int===j)+'">'+n+'</button>'}).join('')+'</div>'+
+        '<div class="chips" style="margin-top:8px">'+D.map(function(n,j){return '<button class="chip" data-act="pday" data-n="'+i+'" data-v="'+j+'" aria-pressed="'+(x.days.indexOf(j)>=0)+'">'+n+'</button>'}).join('')+'</div>'+
+        '<div class="actions" style="margin-top:6px"><button class="link" data-act="pdel" data-n="'+i+'">Remove this session</button></div></div>'}).join('')+
+      (plans.length<3?'<div class="actions"><button class="btn sm" data-act="padd">Add a usual session</button></div>':'');
+  }
+  return h+'</div>';
+}
+function aboutHTML(){
+  var d=function(t,b){return '<details class="legal"><summary>'+t+'</summary><div>'+b+'</div></details>'};
+  return '<div class="panel"><div class="panel-head"><h2>About and legal</h2><span class="mono" style="font-size:.72rem;color:var(--muted)">'+(LIVE?'v1.0 pilot':'v1.0 test build')+'</span></div>'+
+    d('Not medical advice','<p>Plate Math gives general nutrition information for healthy adults. It is not medical advice and does not replace a doctor or registered dietitian. If you have a medical condition, are pregnant, or have a history of disordered eating, talk to a professional before following calorie or macro targets.</p><p>If food, eating or your body is causing you stress, Boynton Mental Health at UMN can help: 612-624-1444. The UMN Student Crisis Line is 612-301-4673 (24/7). The National Alliance for Eating Disorders helpline is 1-866-662-1235 (weekdays). In an emergency, call 911 or 988.</p>')+
+    d('Allergies','<p>Allergen filters use the dining hall\u2019s labels plus food names, descriptions and ingredients. Labels can be wrong or missing, recipes change, and kitchens share equipment. Always confirm with dining staff before you eat. Never rely on this app alone for a severe allergy.</p>')+
+    d('Your privacy','<p>Everything you enter (your body numbers, goals, food rules, logs and workouts) stays in this browser on this device. There are no accounts, no tracking and nothing is sent to a server. Clearing your browser data erases it.</p>')+
+    d('Where the numbers come from','<p>Menus and nutrition come from each school\u2019s published dining data. Salad bar items and \u201cNot on the menu?\u201d foods use typical values for a standard portion. Targets use the Mifflin-St Jeor equation, ISSN protein guidance, FDA Daily Values, the Dietary Guidelines and the 2024 Compendium of Physical Activities.</p>')+
+    d('Who made this','<p>Plate Math is an independent project by a University of Minnesota student. It is not affiliated with or endorsed by the University of Minnesota, M Food Co., Chartwells, Compass Group or Dine On Campus. Dine On Campus is a trademark of Compass Group USA.</p>'+(LIVE?'<p>Menus are read automatically once a day from UMN\u2019s published menus.</p>':'<p>This is a private test build. Do not share it publicly.</p>')+'')+
+    '</div>';
+}
+function allergyCard(){
+  var p=S.prof,al=AL.filter(function(a){return isAllergy(a)&&p.avoid.indexOf(a.k)>=0}).map(function(a){return a.label});
+  return '<div class="wrap" role="dialog" aria-modal="true" aria-label="Allergy card"><div class="top"><div class="eyebrow">Show this to dining staff</div><button class="btn sm" data-act="closesheet">Close</button></div>'+
+    '<div class="acard"><h1>Food allergy</h1><p class="big-al">'+(al.length?al.map(esc).join(', '):'No allergens selected')+'</p>'+
+    (p.severe?'<p class="sev">This allergy is severe. I carry epinephrine.</p>':'')+
+    '<p>Could you check the ingredients for me, including sauces and seasonings? Please also check for cross-contact from shared fryers, grills, cutting boards and serving spoons.</p><p>Thank you!</p></div>'+
+    '<div class="actions"><button class="chip" data-act="severe" aria-pressed="'+(!!p.severe)+'">Severe allergy (I carry an EpiPen)</button></div></div>';
+}
+function youView(){
+  var p=S.prof,d=dayTargets(p),dn=dataNote(),site=curSite(),loc=curLoc();
+  var h='<h1>You</h1>'+subTabs('ysub',[['profile','Profile'],['food','Food rules'],['workouts','Workouts'],['app','App']]);
+  if(S.ysub==='food')return h+'<p class="lede">We hide what you can\u2019t or won\u2019t eat across the whole app.</p><div class="panel">'+foodFields()+'</div>';
+  if(S.ysub==='workouts')return h+trainingSettings();
+  if(S.ysub==='app')return h+
+   '<div class="panel"><div class="panel-head"><h2>Dining place</h2></div><p>'+esc(site?site.name:'')+' \u00b7 '+esc(loc?loc.name:'')+'</p><div class="actions"><button class="btn sm" data-act="picker">Change</button></div></div>'+
+   '<div class="panel"><div class="panel-head"><h2>Look</h2></div>'+lookHTML()+
+     '<div class="dt" style="margin-top:16px">Salad bar</div><div class="seg col" role="group" aria-label="Salad bar"><button data-act="ui" data-k="salad" data-v="on" aria-pressed="'+(!!S.ui.salad)+'">Show salad bar foods</button><button data-act="ui" data-k="salad" data-v="off" aria-pressed="'+(!S.ui.salad)+'">My hall has none</button></div><p class="hint">Most halls have a salad bar that isn\u2019t on the online menu. When shown, it uses typical values per scoop.</p>'+
+     '<details class="more"><summary>More layout options</summary>'+layoutControls()+'</details></div>'+
+   '<div class="panel"><div class="panel-head"><h2>Menu data</h2></div>'+
+    (LIVE?'<p class="mono" style="font-size:.8rem">UMN menus \u00b7 menu day '+esc(dn.md?fmtDay(dn.md):'?')+(dn.when?' \u00b7 updated '+esc(dn.when):'')+'</p><p class="hint">Menus update automatically once each morning.</p>':'')+(LIVE?'':'<p class="mono" style="font-size:.8rem">'+sitesWithMenus().length+' campus'+(sitesWithMenus().length===1?'':'es')+' loaded \u00b7 menu day '+esc(dn.md||'?')+(dn.when?' \u00b7 pulled '+esc(dn.when):'')+'<br>Source: '+(S.src==='file'?'a menu file you loaded':'the built-in UMN menu')+'</p>'+
+    (dn.stale?'<p class="hint" style="color:var(--warn)">Menus are from an earlier day.</p>':'')+
+    dataLoader()+(S.src==='file'?'<div class="actions"><button class="btn sm" data-act="resetdata">Back to the built-in UMN menu</button></div>':''))+
+    (LIVE?'<p class="hint">'+esc(DISCLAIMER)+'</p></div>':'<p class="hint">Private test build. A loaded file stays saved in this browser and isn\u2019t uploaded anywhere. Menu data belongs to Dine On Campus and its schools, so don\u2019t share this page or publish it.</p></div>')+
+   aboutHTML()+
+   '<div class="panel"><div class="panel-head"><h2>Start over</h2></div><div class="actions" style="margin-top:0"><button class="btn sm" data-act="redo">Redo the intro</button><button class="btn sm" data-act="wipe">Erase saved plates</button><button class="btn sm" data-act="wipelog">Clear today\u2019s log</button></div></div>';
+  return h+
+   '<div class="panel"><div class="panel-head"><h2>Goal</h2></div>'+goalCards()+'</div>'+
+   '<div class="panel"><div class="panel-head"><h2>Daily targets</h2></div><div class="big" id="tgt-live">'+tgtHTML()+'</div>'+safetyNote(p,d)+
+    '<details class="more"><summary>How we got these, or set your own</summary><p class="hint">We estimate the calories you burn in a day from your age, size and activity, then adjust for your goal (Lose fat is about 18% lower, never below 1,500 cal for women or 1,800 for men, and not offered under 18 or at a BMI under 18.5; Build muscle 350 higher). Formulas like this can be off by 10% or more for athletes, so adjust if your weight trend says otherwise. Protein is 1.6 g per kg of body weight (about 0.7 g per pound) for Eat well. The official 0.8 g/kg is a bare minimum; newer studies put real needs nearer 1.2 g/kg even without training, and gains from strength training level off around 1.6 g/kg. More protein uses 2.0 g/kg, Lose fat 2.2 to protect muscle and Build muscle 1.8, within the 1.6 to 2.2 g/kg range sports nutrition research supports for people who train. If your BMI is over 30, protein uses the weight for a BMI of 27 instead, since extra body fat doesn\u2019t need extra protein. These are estimates. Type your own numbers if a coach gave you different ones (empty = automatic).</p>'+
+    '<div class="fields" style="margin-top:8px"><label class="tf">Calories<input type="number" id="f-calO" inputmode="numeric" value="'+(p.calO||'')+'" placeholder="auto"></label><label class="tf">Protein (g)<input type="number" id="f-pO" inputmode="numeric" value="'+(p.pO||'')+'" placeholder="auto"></label></div></details></div>'+
+   '<div class="panel"><div class="panel-head"><h2>Body</h2></div>'+bodyFields().replace('<div class="big" id="tgt-live">'+tgtHTML()+'</div>'+safetyNote(p,dayTargets(p)),'')+'</div>';
+}
+
+/* ---------- render ---------- */
+function renderTabs(){
+  var el=document.getElementById('tabs');
+  if(!S.done){el.hidden=true;return}
+  el.hidden=false;
+  var n=plateCount();
+  var IC={menu:'<path d="M5 4h14v16H5z M8 8h8 M8 12h8 M8 16h5"/>',plate:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/>',today:'<path d="M4 20V10 M10 20V4 M16 20v-7 M21 20H3"/>',you:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'};
+  el.innerHTML=[['menu','Menu'],['plate','Plate'],['today','Today'],['you','You']].map(function(t){return '<button data-act="tab" data-v="'+t[0]+'"'+(S.tab===t[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[t[0]]+'</svg><span>'+t[1]+'</span>'+(t[0]==='plate'&&n?'<em>'+n+'</em>':'')+'</button>'}).join('');
+}
+function brandHTML(){
+  return '<div class="brand"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="var(--line)" stroke-width="5"/><path d="M16 4 A12 12 0 0 1 27.4 19.7" fill="none" stroke="var(--p)" stroke-width="5"/><path d="M27.4 19.7 A12 12 0 0 1 9.5 26.1" fill="none" stroke="var(--c)" stroke-width="5"/><path d="M9.5 26.1 A12 12 0 0 1 16 4" fill="none" stroke="var(--f)" stroke-width="5"/></svg><span>Plate Math</span></div>';
+}
+function render(){
+  var app=document.getElementById('app'),h;
+  if(!DATA){app.innerHTML='<p class="empty">Loading menus…</p>';return}
+  if(!S.done)h=introView();
+  else h=S.tab==='menu'?menuView():S.tab==='plate'?plateView():S.tab==='today'?todayView():youView();
+  if(S.done)h=brandHTML()+h;
+  app.innerHTML=h;renderTabs();if(S.done)save();
+}
+function refreshAdds(){
+  document.querySelectorAll('.add').forEach(function(b){
+    var item=b.closest('.item');if(!item)return;
+    var n=inPlate(item.getAttribute('data-key'));
+    b.classList.toggle('has',!!n);b.innerHTML=n?'+<i class="cnt">'+n+'</i>':'+';
+  });
+  var bud=document.getElementById('budget');if(bud&&curLoc())bud.innerHTML=budgetStrip(mealBudget());
+  renderTabs();save();
+}
+function openSheet(){
+  var sh=document.getElementById('sheet');
+  S.picker.slug=S.sel.slug;S.picker.q='';
+  sh.hidden=false;sh.innerHTML=sheetHTML();
+}
+function sheetHTML(){return '<div class="wrap" role="dialog" aria-modal="true" aria-label="Pick a place"><div class="top"><h1>Pick a place</h1><button class="btn sm" data-act="closesheet">Close</button></div><div style="margin-top:16px">'+pickerHTML()+'</div></div>'}
+function closeSheet(){var sh=document.getElementById('sheet');sh.hidden=true;sh.innerHTML='';var o=S.opener;S.opener=null;if(o&&document.body.contains(o))o.focus({preventScroll:true})}
+function refreshPicker(){
+  var sh=document.getElementById('sheet');
+  if(!sh.hidden){var y=sh.scrollTop,q=document.getElementById('f-campus'),f=q&&document.activeElement===q;sh.innerHTML=sheetHTML();sh.scrollTop=y;if(f){var n=document.getElementById('f-campus');n.focus();n.setSelectionRange(n.value.length,n.value.length)}}
+  else render();
+}
+
+/* ---------- actions ---------- */
+function recalc(){var el=document.querySelectorAll('#tgt-live');for(var i=0;i<el.length;i++)el[i].innerHTML=tgtHTML();var sl=document.querySelectorAll('.safe-live');for(var j=0;j<sl.length;j++)sl[j].outerHTML=safetyNote(S.prof,dayTargets(S.prof))}
+function applyVariant(){
+  var v=S.variants[S.vi];if(!v)return;
+  S.plate=v.items.map(function(e){return{item:e.item,q:e.q}});
+}
+function build(){
+  var ci=curItems(),b=mealBudget();
+  if(!S.variants.length||S.variants._k!==S.sel.locId+'|'+S.period+'|'+S.prof.goal){
+    S.variants=suggest(ci.all.filter(function(it){return allowed(it,S.prof)&&!it.cond}).concat(saladPool(curLoc())),b,S.prof.goal,7,{fav:S.fav,nope:S.nope,lowNa:S.prof.lowNa,prof:S.prof,breakfast:mealKey(S.period)==='breakfast'});
+    S.variants._k=S.sel.locId+'|'+S.period+'|'+S.prof.goal;S.vi=0;
+  }else S.vi=(S.vi+1)%S.variants.length;
+  if(!S.variants.length)return false;
+  applyVariant();return true;
+}
+function rerenderAll(){var sh=document.getElementById('sheet');if(!sh.hidden&&sh.querySelector('[aria-label="Layout"]')){var y=sh.scrollTop;sh.innerHTML=layoutSheet();sh.scrollTop=y}render()}
+function resetVariants(){S.variants=[];S.vi=0}
+function prunePlate(){var out=S.plate.filter(function(e){return !allowed(e.item,S.prof)});if(!out.length)return;S.plate=S.plate.filter(function(e){return allowed(e.item,S.prof)});toast('Took '+out.map(function(e){return e.item.name}).slice(0,2).join(', ')+(out.length>2?' and '+(out.length-2)+' more':'')+' off your plate (food rules).')}
+function addItem(item){var e=S.plate.filter(function(x){return x.item.key===item.key})[0];if(e)e.q=Math.min(6,e.q+1);else S.plate.push({item:item,q:1});render();toast('Added '+item.name)}
+
+var ACT={
+  boost:function(el){
+    S.boost=(S.boost===el.dataset.v)?'':el.dataset.v;
+    document.querySelectorAll('[data-act=boost]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===S.boost))});
+    var l=document.getElementById('list');if(l)l.innerHTML=listHTML();
+  },
+  ui:function(el){var k=el.dataset.k,v=el.dataset.v;if(k==='salad')S.ui.salad=(v==='on');else S.ui[k]=v;resetVariants();applyPal();save();rerenderAll()},
+  surprise:function(){var keys=Object.keys(UIOPT);keys.forEach(function(k){var o=UIOPT[k][1];S.ui[k]=o[Math.floor(Math.random()*o.length)][0]});var P=['graphite','ember','violet','paper'];S.pal=P[Math.floor(Math.random()*P.length)];applyPal();save();rerenderAll();toast('New look. Tap again for another.')},
+  uireset:function(){S.ui.dens='comfy';S.ui.head='clean';S.ui.list='cards';S.ui.macro='bar';S.ui.verdict='stripe';S.pal='graphite';applyPal();save();rerenderAll()},
+  layout:function(){var sh=document.getElementById('sheet');sh.hidden=false;sh.innerHTML=layoutSheet();sh.scrollTop=0},
+  addx:function(el){var k=el.dataset.k,item=SALAD_ITEMS.filter(function(x){return x.key===k})[0];if(!item)return;var e=S.plate.filter(function(x){return x.item.key===k})[0];if(e)e.q=Math.min(6,e.q+1);else S.plate.push({item:item,q:1});refreshAdds()},
+  qsalad:function(el){var q=QUICK_SALADS[+el.dataset.n];q.items.forEach(function(x){var it=saladByName(x[0]);if(!it||!allowed(it,S.prof))return;var e=S.plate.filter(function(y){return y.item.key===it.key})[0];if(e)e.q=Math.min(6,e.q+x[1]);else S.plate.push({item:it,q:x[1]})});render();toast('Added '+q.name)},
+  lowna:function(){S.prof.lowNa=!S.prof.lowNa;resetVariants();save();render()},
+  wtype:function(el){S.wf.type=el.dataset.v;S.trainOpen=true;render()},
+  wint:function(el){S.wf.int=+el.dataset.v;document.querySelectorAll('[data-act=wint]').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.v===S.wf.int))});var e=document.getElementById('w-eff');if(e)e.textContent=METS[S.wf.type].eff[S.wf.int]},
+  wlog:function(){var mn=parseFloat(document.getElementById('w-min').value),wt=parseFloat(document.getElementById('w-watch').value);
+    if(!(mn>=5&&mn<=300)){toast('Enter minutes between 5 and 300');return}
+    var w={type:S.wf.type,min:Math.round(mn),int:S.wf.int,t:Date.now()};if(wt>0&&wt<3000)w.watch=Math.round(wt);
+    var mi=document.getElementById('w-mi');if(mi){var mv=parseFloat(mi.value);if(mv>0&&mv<60&&mn/mv>=4&&mn/mv<=20)w.mi=Math.round(mv*10)/10}
+    var k=dateKey();if((S.train[k]||[]).length>=6||(S.train[k]||[]).reduce(function(a,x){return a+x.min},0)+w.min>600){toast('That\u2019s more than 10 hours or 6 workouts today. Check your entries.');return}(S.train[k]=S.train[k]||[]).push(w);resetVariants();save();render();toast('Workout logged'+(S.prof.trainOn?'. Targets updated.':'.'))},
+  wdel:function(el){var l=S.train[dateKey()]||[];l.splice(+el.dataset.n,1);save();render()},
+  train:function(el){S.prof.trainOn=el.dataset.v==='on';if(!S.prof.plans)S.prof.plans=plansOf(S.prof).slice();resetVariants();save();render()},
+  padd:function(){S.prof.plans=plansOf(S.prof).slice();S.prof.plans.push({type:'lift',min:60,int:1,days:[]});save();render()},
+  pdel:function(el){S.prof.plans=plansOf(S.prof).slice();S.prof.plans.splice(+el.dataset.n,1);resetVariants();save();render()},
+  pint:function(el){S.prof.plans=plansOf(S.prof);S.prof.plans[+el.dataset.n].int=+el.dataset.v;resetVariants();save();render()},
+  pday:function(el){S.prof.plans=plansOf(S.prof);var d=S.prof.plans[+el.dataset.n].days,v=+el.dataset.v,i=d.indexOf(v);if(i>=0)d.splice(i,1);else d.push(v);resetVariants();save();render()},
+  wdone:function(el){var w=plannedFor(S.prof,new Date().getDay()).filter(function(x){return x.type===el.dataset.v})[0];if(!w)return;var k=dateKey();(S.train[k]=S.train[k]||[]).push({type:w.type,min:w.min,int:w.int,t:Date.now()});save();render();toast('Logged your usual session')},
+  mayok:function(el){S.prof.mayOk=el.dataset.v==='1';resetVariants();prunePlate();save();render()},
+  acard:function(){var sh=document.getElementById('sheet');sh.hidden=false;sh.innerHTML=allergyCard();sh.scrollTop=0},
+  severe:function(){S.prof.severe=!S.prof.severe;save();document.getElementById('sheet').innerHTML=allergyCard()},
+  pal:function(el){S.pal=el.dataset.v;applyPal();save();rerenderAll()},
+  tab:function(el){S.tab=el.dataset.v;render();window.scrollTo(0,0)},
+  sub:function(el){S[el.dataset.k]=el.dataset.v;render();window.scrollTo(0,0)},
+  tipdone:function(){S.tipDone=true;save();var t=document.querySelector('.tip');if(t)t.remove()},
+  help:function(){var sh=document.getElementById('sheet');sh.hidden=false;sh.innerHTML=helpSheet();sh.scrollTop=0},
+  stall:function(){var ci=curItems(),all=ci.st.every(function(st){return S.stOpen[st.name]});ci.st.forEach(function(st){S.stOpen[st.name]=!all});var l=document.getElementById('list');if(l)l.innerHTML=listHTML()},
+  savequick:function(){if(!S.plate.length)return;var loc=curLoc(),base=(loc?loc.name.replace(/ Dining Hall| Dining Center| Residence Hall/i,''):'Plate')+' '+S.period.toLowerCase(),nm=base,i=2;while(S.saved.some(function(x){return x.name===nm}))nm=base+' '+(i++);
+    S.saved.unshift({name:nm,hall:loc?loc.name:'',period:S.period,items:S.plate.map(function(e){var o={n:e.item.name,port:e.item.portion,q:e.q};if(e.item.salad)o.sb=1;if(e.item.extra){o.x=[e.item.cal,e.item.p,e.item.c,e.item.f,e.item.fi];o.cu=e.item.custom}return o})});
+    save();render();toast('Saved as \u201c'+nm+'\u201d under Saved')},
+  goal:function(el){S.prof.goal=el.dataset.v;resetVariants();save();render()},
+  set:function(el){var k=el.dataset.k;S.prof[k]=el.dataset.v;resetVariants();if(k==='diet')prunePlate();save();render()},
+  avoid:function(el){var a=S.prof.avoid,i=a.indexOf(el.dataset.v);if(i>=0)a.splice(i,1);else a.push(el.dataset.v);resetVariants();prunePlate();save();render()},
+  next:function(){
+    if(S.step<3){S.step++;render();window.scrollTo(0,0)}
+    else{S.done=true;S.tab='menu';save();render();window.scrollTo(0,0)}
+  },
+  back:function(){S.step=Math.max(0,S.step-1);render();window.scrollTo(0,0)},
+  campus:function(el){S.picker.slug=el.dataset.v;refreshPicker()},
+  hall:function(el){
+    var had=S.plate.length;stashPlate();
+    S.sel.slug=S.picker.slug;S.sel.locId=el.dataset.v;S.period='';S.q='';resetVariants();ensurePeriod();unstashPlate();save();if(had)toast('Your other plate is saved. Switch back to get it.');
+    closeSheet();render();
+  },
+  picker:function(){openSheet()},
+  closesheet:function(){closeSheet()},
+  period:function(el){if(el.dataset.v===S.period)return;stashPlate();S.period=el.dataset.v;S.periodManual=Date.now();S.q='';resetVariants();unstashPlate();save();render()},
+  toggle:function(el){var it=el.closest('.item'),k=it.getAttribute('data-key');S.open[k]=!S.open[k];it.classList.toggle('open',S.open[k]);el.setAttribute('aria-expanded',String(!!S.open[k]))},
+  add:function(el){
+    var it=el.closest('.item'),i=+el.dataset.i,item=normItem(DATA,curSite(),i);
+    var e=S.plate.filter(function(x){return x.item.key===item.key})[0];
+    if(e)e.q=Math.min(6,e.q+1);else S.plate.push({item:item,q:1});
+    refreshAdds();
+  },
+  build:function(){
+    var keep=S.plate.slice(),ok=build();
+    if(!ok){S.plate=keep;var full=curItems().all.filter(function(it){return it.ok&&!it.partial&&!it.check}).length;toast(full<3?'This place doesn\u2019t post full nutrition, so a plate can\u2019t be built. Try Compare halls.':'No full plate fits your rules here. Add foods yourself.');return}
+    if(S.variants.length===1&&S.vi===0&&S.tab==='plate')toast('This is the only plate that fits your rules here.');
+    S.tab='plate';S.psub='plate';render();window.scrollTo(0,0);
+  },
+  inc:function(el){var e=S.plate[+el.dataset.n];if(e&&e.q<6)e.q=e.q<1?1:e.q+1;render()},
+  dec:function(el){var n=+el.dataset.n,e=S.plate[n];if(!e)return;e.q=e.q>1?e.q-1:e.q===1?0.5:0;if(e.q<=0)S.plate.splice(n,1);render()},
+  log:function(){
+    if(!S.plate.length)return;var loc=curLoc(),t=totals(S.plate),k=dateKey();
+    (S.log[k]=S.log[k]||[]).push({period:S.period,hall:loc?loc.name:'',t:Date.now(),tot:fullTot(S.plate),
+      items:S.plate.map(function(e){return{n:e.item.name,port:e.item.portion,q:e.q}})});
+    S.plate=[];if(S.plates)delete S.plates[plateKey()];resetVariants();save();S.tab='today';render();window.scrollTo(0,0);toast('Logged. Your next meal\u2019s budget is updated.');
+  },
+  unlog:function(el){var m=todayLog();m.splice(+el.dataset.n,1);save();render()},
+  copy:function(){
+    var loc=curLoc(),t=totals(S.plate);
+    var txt=(loc?loc.name:'')+' \u00b7 '+S.period+'\n'+S.plate.map(function(e){return '- '+e.item.name+(e.q!==1?' x'+fmtQ(e.q):'')+' ('+r0(e.item.cal*e.q)+' cal, '+r0(e.item.p*e.q)+' g protein)'}).join('\n')+
+      '\nTotal: '+r0(t.cal)+' cal \u00b7 '+r0(t.p)+' g protein \u00b7 '+r0(t.c)+' g carbs \u00b7 '+r0(t.f)+' g fat';
+    function fallback(){var b=document.getElementById('copybox');if(b){b.hidden=false;b.value=txt;b.focus();b.select()}}
+    try{navigator.clipboard.writeText(txt).then(function(){toast('Plate copied')},fallback)}catch(e){fallback()}
+  },
+  extra:function(el){var x=EXTRAS[+el.dataset.n];addItem(mkItem(x[0],x[1],x[2],x[3],x[4],x[5],x[6]))},
+  custom:function(el){var x=S.custom[+el.dataset.n];addItem(mkItem(x[0],x[1],x[2],x[3],x[4],x[5],0,true))},
+  addcustom:function(){
+    var g=function(id){return document.getElementById(id).value},nm=(g('c-name')||'').trim().slice(0,60),cal=parseFloat(g('c-cal'));
+    var num=function(id){var v=parseFloat(g(id));return isFinite(v)?Math.min(500,Math.max(0,v)):0};
+    if(!nm||!(cal>0)||!isFinite(cal)){toast('Add a name and calories first');return}
+    if(cal>5000){toast('That\u2019s more than 5,000 calories. Check the number.');return}
+    var rec=[nm,'1 serving',Math.round(cal),num('c-p'),num('c-c'),num('c-f')];
+    S.custom=[rec].concat(S.custom.filter(function(x){return x[0]!==nm})).slice(0,8);save();
+    var ci2=mkItem(rec[0],rec[1],rec[2],rec[3],rec[4],rec[5],0,true);if(!allowed(ci2,S.prof)){toast('That name matches your food rules, so it wasn\u2019t added.');render();return}addItem(ci2);
+  },
+  fav:function(el){var k=el.closest('.item').getAttribute('data-key');if(S.fav[k])delete S.fav[k];else S.fav[k]=1;save();resetVariants();el.textContent=S.fav[k]?'\u2605 Favorited':'\u2606 Favorite'},
+  nope:function(el){var k=el.closest('.item').getAttribute('data-key');if(S.nope[k])delete S.nope[k];else S.nope[k]=1;save();resetVariants();el.textContent=S.nope[k]?'Suggest it again':'Don\u2019t suggest'},
+  compare:function(){var sh=document.getElementById('sheet');sh.hidden=false;sh.innerHTML='<div class="wrap"><p class="empty">Comparing places\u2026</p></div>';setTimeout(function(){sh.innerHTML=compareHTML();sh.scrollTop=0},20)},
+  hall2:function(el){stashPlate();S.sel.locId=el.dataset.v;S.period=el.dataset.p;S.q='';resetVariants();unstashPlate();save();closeSheet();S.tab='menu';render();window.scrollTo(0,0)},
+  clear:function(){S.plate=[];render()},
+  showall:function(){S.showAll=!S.showAll;var l=document.getElementById('list');if(l)l.innerHTML=listHTML()},
+  save:function(){
+    var nm=(document.getElementById('f-name').value||'').trim()||('Plate '+(S.saved.length+1));
+    var loc=curLoc();
+    S.saved.unshift({name:nm,hall:loc?loc.name:'',period:S.period,items:S.plate.map(function(e){var o={n:e.item.name,port:e.item.portion,q:e.q};if(e.item.salad)o.sb=1;if(e.item.extra){o.x=[e.item.cal,e.item.p,e.item.c,e.item.f,e.item.fi];o.cu=e.item.custom}return o})});
+    save();render();toast('Saved \u201c'+nm+'\u201d');
+  },
+  loadsaved:function(el){
+    var sv=S.saved[+el.dataset.n],by={};curItems().all.forEach(function(it){by[it.key]=it});
+    S.plate=[];var sk=[];sv.items.forEach(function(x){var it=resolveSaved(x,by);if(it){if(allowed(it,S.prof))S.plate.push({item:it,q:x.q});else sk.push(it.name)}});if(sk.length)toast('Skipped '+sk.slice(0,2).join(', ')+(sk.length>2?' and '+(sk.length-2)+' more':'')+' (food rules)');
+    S.tab='plate';S.psub='plate';render();window.scrollTo(0,0);
+  },
+  delsaved:function(el){S.saved.splice(+el.dataset.n,1);save();render()},
+  redo:function(){S.done=false;S.step=0;render();window.scrollTo(0,0)},
+  wipe:function(el){if(S.arm!=='wipe'){S.arm='wipe';el.textContent='Tap again to erase';setTimeout(function(){S.arm=''},3000);return}S.arm='';S.saved=[];save();render();toast('Saved plates erased')},
+  lognow:function(el){
+    var sv=S.saved[+el.dataset.n];if(!sv)return;var by={};curItems().all.forEach(function(it){by[it.key]=it});
+    var items=[],sk=0;sv.items.forEach(function(x){var it=resolveSaved(x,by);if(it){if(allowed(it,S.prof))items.push({item:it,q:x.q});else sk++}});
+    if(!items.length){toast(sk?'Those foods don\u2019t fit your food rules':'None of those foods are on this menu');return}
+    var t=totals(items),k=dateKey(),loc=curLoc();
+    (S.log[k]=S.log[k]||[]).push({period:S.period,hall:loc?loc.name:'',t:Date.now(),tot:fullTot(items),items:items.map(function(e){return{n:e.item.name,port:e.item.portion,q:e.q}})});
+    save();S.tab='today';render();window.scrollTo(0,0);toast('Logged \u201c'+sv.name+'\u201d');
+  },
+  wipelog:function(el){if(S.arm!=='wipelog'){S.arm='wipelog';el.textContent='Tap again to clear';setTimeout(function(){S.arm=''},3000);return}S.arm='';delete S.log[dateKey()];save();render();toast('Today\u2019s log cleared')},
+  resetdata:function(){idbDel().then(function(){location.reload()})}
+};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var sh=document.getElementById('sheet');if(!sh.hidden){closeSheet()}}});
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-act]');if(!el)return;
+  var fa=el.dataset.act,fv=el.dataset.v,kb=e.detail===0;
+  setTimeout(function(){if(!kb||(document.activeElement&&document.activeElement!==document.body))return;var t=document.querySelector('[data-act="'+fa+'"]'+(fv?'[data-v="'+fv+'"]':''));if(t)t.focus({preventScroll:true})},0);
+  var shWas=!document.getElementById('sheet').hidden;if(!shWas)S.opener=el;
+  var f=ACT[el.dataset.act];if(f)f(el);
+  setTimeout(function(){var sh=document.getElementById('sheet');if(!sh.hidden&&!sh.contains(document.activeElement)){var b=sh.querySelector('button,input,[tabindex]');if(b)b.focus({preventScroll:true})}},60);
+});
+document.addEventListener('keydown',function(e){if(e.key!=='Tab')return;var sh=document.getElementById('sheet');if(sh.hidden)return;var f=[].slice.call(sh.querySelectorAll('button,input,select,textarea,summary,[tabindex]')).filter(function(x){return !x.disabled&&x.offsetParent!==null});if(!f.length)return;var a=f[0],z=f[f.length-1];if(!sh.contains(document.activeElement)){e.preventDefault();a.focus();return}if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
+document.addEventListener('toggle',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-help')){S.helpOpenNow=e.target.open}if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-salad')){S.saladOpen=e.target.open}if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-tp')){S.trainOpen=e.target.open}
+  if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-st')){var nm=e.target.getAttribute('data-st');S.stOpen[nm]=e.target.open;var body=e.target.querySelector('.sbody');
+    if(e.target.open&&body&&!body.children.length){var ci=curItems(),st=ci.st.filter(function(x){return x.name===nm})[0];if(st)body.innerHTML=st.items.filter(function(it){return S.showAll||allowed(it,S.prof)}).map(function(it){return itemRow(it,S.prof.goal)}).join('')}
+    var sa=document.querySelector('[data-act=stall]');if(sa){var all=curItems().st.every(function(x){return S.stOpen[x.name]});sa.textContent=all?'Close all':'Open all'}}},true);
+document.addEventListener('input',function(e){
+  var id=e.target.id,v=e.target.value;
+  if(id==='f-q'){S.q=v;var l=document.getElementById('list');if(l)l.innerHTML=listHTML();return}
+  if(id==='f-campus'){S.picker.q=v;refreshPicker();return}
+  if(e.target.dataset&&e.target.dataset.plan!=null&&e.target.dataset.f==='min'){var tm=parseFloat(v);if(!(tm>=5&&tm<=300)&&v!==''){clearTimeout(window._badT);window._badT=setTimeout(function(){toast('Minutes should be between 5 and 300.')},700)}if(tm>=5&&tm<=300){S.prof.plans=plansOf(S.prof);S.prof.plans[+e.target.dataset.plan].min=Math.round(tm);resetVariants();save()}return}
+  var map={'f-age':'age','f-lb':'lb','f-ft':'ft','f-in':'inch','f-calO':'calO','f-pO':'pO'};if(id==='f-ft'&&v.indexOf('.')>=0){v=String(Math.floor(parseFloat(v)))}
+  if(map[id]){var n=parseFloat(v),key=map[id],lim={age:[13,99],lb:[70,500],ft:[4,7],inch:[0,11],calO:[0,8000],pO:[0,400]}[key];
+    if(!isFinite(n)){if(key==='calO'||key==='pO')S.prof[key]=0}
+    else if(n>=lim[0]&&n<=lim[1]&&(key==='inch'||key==='calO'||key==='pO'||n>0))S.prof[key]=(key==='calO'&&n<800)||(key==='pO'&&n<20)?0:n;
+    else if(isFinite(n)&&v!==''){e.target.setAttribute('aria-invalid','true');clearTimeout(window._badT);window._badT=setTimeout(function(){toast(({age:'Age',lb:'Weight',ft:'Height',inch:'Inches'}[key]||'That number')+' should be between '+lim[0]+' and '+lim[1]+'.')},700);return}
+    e.target.removeAttribute('aria-invalid');resetVariants();save();recalc()}
+});
+document.addEventListener('change',function(e){
+  if(e.target.dataset&&e.target.dataset.plan!=null&&e.target.dataset.f==='type'){S.prof.plans=plansOf(S.prof);S.prof.plans[+e.target.dataset.plan].type=e.target.value;resetVariants();save();return}
+  if(e.target.id!=='f-file')return;
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var msg=document.getElementById('load-msg');if(msg)msg.textContent='Reading '+f.name+'…';
+  var rd=new FileReader();
+  rd.onerror=function(){if(msg)msg.textContent='Could not read that file.'};
+  rd.onload=function(){
+    try{
+      var raw=JSON.parse(rd.result);
+      if(!raw.sites||!raw.tags||!raw.nutrientKeys)throw new Error('missing sites/tags/nutrientKeys');
+      DATA=prep(raw);S.src='file';idbPut(raw);
+      var umn=DATA.bySlug[S.sel.slug];if(!umn){var s=sitesWithMenus()[0];if(s){S.sel.slug=s.slug;S.sel.locId=''}}
+      S.msg=sitesWithMenus().length+' campuses loaded.';S.picker.slug=S.sel.slug;resetVariants();S.plate=[];closeSheet();render();
+      var nd=dataNote();toast(nd.stale?'Loaded, but this file is also from '+fmtDay(nd.md)+'.':'Menu updated to today.');
+    }catch(err){S.msg='That file isn’t the right format: '+err.message;if(msg)msg.textContent=S.msg;toast('That file isn’t a menu file.')}
+  };
+  rd.readAsText(f);
+});
+
+/* ---------- boot ---------- */
+var lastDay=dateKey();
+function liveTick(){
+  if(!DATA||!S.done)return;
+  var day=dateKey();if(day!==lastDay){lastDay=day;resetVariants();render();return}
+  var loc=curLoc();if(!loc)return;
+  var cn=campusNow(loc);if(cn.getHours()<5)return;var want=pickPeriod(periodsOf(loc),cn);
+  var busy=document.activeElement&&/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName),sheetOpen=!document.getElementById('sheet').hidden;
+  if(want&&want!==S.period&&(!S.periodManual||Date.now()-S.periodManual>45*60000)&&!busy&&!sheetOpen){
+    stashPlate();S.period=want;S.periodManual=0;S.q='';resetVariants();unstashPlate();render();toast('It’s '+want.toLowerCase()+' time. Showing the '+want.toLowerCase()+' menu.');
+  }else if(S.tab==='menu'&&!busy&&!sheetOpen){var st=document.querySelector('.status');if(st){var hs=hoursState(loc);var b=st.querySelector('b');if(b){b.textContent=hs.txt;b.className=hs.open?'':'off'}}}
+}
+setInterval(liveTick,60000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)liveTick()});
+(function boot(){
+  load();
+  var emb=JSON.parse(document.getElementById('umn-data').textContent);
+  idbGet().then(function(saved){
+    if(!LIVE&&saved&&saved.sites){DATA=prep(saved);S.src='file'}else DATA=prep(emb);
+    if(!DATA.bySlug[S.sel.slug]){var s=sitesWithMenus()[0];if(s){S.sel.slug=s.slug;S.sel.locId=''}}
+    S.picker.slug=S.sel.slug;
+    if(S.splate&&S.splate.length){try{var by={};curItems().all.forEach(function(it){by[it.key]=it});S.splate.forEach(function(x){var it=resolveSaved(x,by);if(it)S.plate.push({item:it,q:x.q})})}catch(e){}S.splate=null}
+    render();
+  });
+})();
+</script>
